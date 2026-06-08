@@ -1,0 +1,2539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Copier & Printer Finder | Central Office Supply</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+
+:root {
+  --navy:         #0C1B3A;
+  --navy-mid:     #152C5B;
+  --navy-light:   #1E4080;
+  --blue:         #2B5CE6;
+  --blue-hover:   #2048C8;
+  --blue-glow:    #EEF3FF;
+  --blue-border:  #BFCFFC;
+  --slate:        #475569;
+  --slate-light:  #94A3B8;
+  --border:       #E2E8F0;
+  --border-mid:   #CBD5E1;
+  --bg:           #F1F5F9;
+  --surface:      #FFFFFF;
+  --text:         #1E293B;
+  --text-light:   #64748B;
+  --success:      #16A34A;
+  --radius:       8px;
+  --radius-lg:    14px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* ── SPLIT SHELL ── */
+.app-shell {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  height: 100vh;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  background: var(--navy);
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 15% 25%, rgba(43,92,230,0.22) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 75%, rgba(21,44,91,0.6) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.sidebar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.055) 1px, transparent 1px);
+  background-size: 22px 22px;
+  pointer-events: none;
+}
+
+.sidebar-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 36px 32px 30px;
+}
+
+.sidebar-logo { margin-bottom: 40px; }
+.sidebar-logo img {
+  height: 36px;
+  display: block;
+}
+
+.sidebar-headline {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.25;
+  margin-bottom: 8px;
+}
+.sidebar-sub {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.6;
+  margin-bottom: 44px;
+}
+
+/* Vertical step nav */
+.step-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.snav-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding-bottom: 28px;
+  position: relative;
+}
+
+.snav-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: 28px;
+  width: 2px;
+  bottom: 0;
+  background: rgba(255,255,255,0.1);
+}
+.snav-item.done:not(:last-child)::after {
+  background: rgba(43,92,230,0.45);
+}
+
+.snav-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.18);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.3);
+  position: relative;
+  z-index: 1;
+  transition: all 0.25s ease;
+}
+
+.snav-item.active .snav-dot {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(43,92,230,0.25);
+}
+.snav-item.done .snav-dot {
+  background: rgba(43,92,230,0.25);
+  border-color: rgba(43,92,230,0.6);
+}
+.snav-item.done .snav-dot::after {
+  content: '✓';
+  position: absolute;
+  font-size: 0.72rem;
+  color: #7ba3ff;
+}
+.snav-item.done .snav-dot span { opacity: 0; }
+
+.snav-text { padding-top: 3px; }
+.snav-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.28);
+  transition: color 0.25s;
+  letter-spacing: 0.01em;
+}
+.snav-item.active .snav-label { color: rgba(255,255,255,0.92); }
+.snav-item.done  .snav-label  { color: rgba(255,255,255,0.48); }
+.snav-sub {
+  font-size: 0.73rem;
+  color: rgba(255,255,255,0.18);
+  margin-top: 1px;
+  transition: color 0.25s;
+}
+.snav-item.active .snav-sub { color: rgba(255,255,255,0.38); }
+.snav-item.done  .snav-sub  { color: rgba(255,255,255,0.25); }
+
+/* Sidebar footer */
+.sidebar-footer {
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 20px;
+}
+.sidebar-footer-eyebrow {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.28);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.sidebar-contact a {
+  display: block;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.48);
+  text-decoration: none;
+  line-height: 1.8;
+  transition: color 0.2s;
+}
+.sidebar-contact a:hover { color: rgba(255,255,255,0.85); }
+
+/* ── CONTENT PANE ── */
+.content-pane {
+  overflow-y: auto;
+  height: 100vh;
+  background: var(--bg);
+}
+
+/* ── FORM AREA ── */
+.form-area {
+  min-height: 100vh;
+  padding: 60px 80px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.step-card {
+  display: none;
+  width: 100%;
+  max-width: 700px;
+}
+.step-card.active { display: block; }
+#step-cat { max-width: 780px; }
+
+.step-eyebrow {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 12px;
+}
+.step-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--navy);
+  line-height: 1.1;
+  margin-bottom: 10px;
+  letter-spacing: -0.02em;
+}
+.step-desc {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin-bottom: 40px;
+  line-height: 1.65;
+}
+
+/* ── FIELD GROUPS ── */
+.field-group { margin-bottom: 28px; }
+.field-group:last-child { margin-bottom: 0; }
+
+.field-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text);
+  margin-bottom: 4px;
+  letter-spacing: -0.01em;
+}
+.field-hint {
+  font-size: 0.78rem;
+  color: var(--text-light);
+  margin-bottom: 10px;
+  line-height: 1.45;
+}
+
+/* ── RADIO CARDS ── */
+.rc-grid { display: grid; gap: 8px; }
+.rc-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+
+.rc-item input[type="radio"] { display: none; }
+.rc-item label {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  background: var(--surface);
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  user-select: none;
+}
+.rc-item label:hover {
+  border-color: var(--blue-border);
+  background: var(--blue-glow);
+}
+.rc-item input:checked + label {
+  border-color: var(--blue);
+  background: var(--blue-glow);
+  box-shadow: inset 0 0 0 1px var(--blue);
+}
+
+.rc-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.rc-item input:checked + label .rc-icon {
+  background: rgba(43,92,230,0.1);
+}
+.rc-body { flex: 1; }
+.rc-main {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--text);
+}
+.rc-sub {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  margin-top: 1px;
+}
+.rc-radio {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--border-mid);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  background: var(--surface);
+}
+.rc-item input:checked + label .rc-radio {
+  border-color: var(--blue);
+  background: var(--blue);
+}
+.rc-item input:checked + label .rc-radio::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+/* ── CHECKBOXES ── */
+.ck-grid { display: grid; gap: 8px; }
+.ck-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+
+.ck-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  background: var(--surface);
+  transition: all 0.15s;
+  user-select: none;
+}
+.ck-item:hover {
+  border-color: var(--blue-border);
+  background: var(--blue-glow);
+}
+.ck-item.checked {
+  border-color: var(--blue);
+  background: var(--blue-glow);
+}
+.ck-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--blue);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.ck-main {
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: var(--text);
+}
+.ck-sub {
+  display: block;
+  font-size: 0.73rem;
+  color: var(--text-light);
+  margin-top: 1px;
+}
+
+/* ── TEXT INPUTS ── */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+textarea {
+  width: 100%;
+  padding: 10px 13px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: var(--surface);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  appearance: none;
+}
+input:focus, textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(43,92,230,0.1);
+}
+input.error { border-color: #DC2626; }
+
+.input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.input-row .field-group { margin-bottom: 0; }
+
+.section-divider {
+  border: none;
+  border-top: 1.5px solid var(--border);
+  margin: 24px 0;
+}
+.section-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin-bottom: 10px;
+}
+
+/* Replacing field */
+#replace-field {
+  display: none;
+  margin-top: 10px;
+}
+
+/* ── ERRORS ── */
+.err-msg {
+  font-size: 0.76rem;
+  color: #DC2626;
+  margin-top: 5px;
+  display: none;
+}
+.err-msg.show { display: block; }
+
+/* ── BUTTONS ── */
+.btn-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 36px;
+  padding-top: 24px;
+  border-top: 1.5px solid var(--border);
+}
+
+.btn {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 11px 26px;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+  white-space: nowrap;
+}
+.btn:active { transform: scale(0.97); }
+.btn:disabled { opacity: 0.48; cursor: not-allowed; transform: none; }
+
+.btn-primary {
+  background: var(--blue);
+  color: #fff;
+  margin-left: auto;
+  box-shadow: 0 2px 10px rgba(43,92,230,0.28);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--blue-hover);
+  box-shadow: 0 4px 18px rgba(43,92,230,0.38);
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-light);
+  border: 1.5px solid var(--border);
+}
+.btn-ghost:hover { border-color: var(--slate); color: var(--text); }
+
+.btn-submit {
+  background: var(--navy);
+  color: #fff;
+  margin-left: auto;
+  box-shadow: 0 2px 10px rgba(12,27,58,0.22);
+}
+.btn-submit:hover:not(:disabled) {
+  background: var(--navy-mid);
+  box-shadow: 0 4px 18px rgba(12,27,58,0.32);
+  transform: translateY(-1px);
+}
+
+/* ── SPINNER ── */
+.spinner-wrap {
+  display: none;
+  align-items: center;
+  gap: 9px;
+  font-size: 0.83rem;
+  color: var(--text-light);
+  margin-top: 12px;
+}
+.spinner-wrap.show { display: flex; }
+.spinner {
+  width: 15px; height: 15px;
+  border: 2px solid var(--border);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.send-status {
+  margin-top: 10px;
+  font-size: 0.83rem;
+  font-weight: 500;
+  display: none;
+}
+.send-status.success { color: var(--success); display: block; }
+.send-status.error-s { color: #DC2626; display: block; }
+
+/* ── RESULT SECTION ── */
+#result-section {
+  display: none;
+  padding: 60px 80px 60px 72px;
+}
+
+.note-card {
+  border-radius: var(--radius);
+  padding: 13px 16px;
+  font-size: 0.83rem;
+  line-height: 1.55;
+  margin-bottom: 18px;
+}
+.note-card.blue {
+  background: #EFF6FF;
+  border: 1.5px solid #BFDBFE;
+  color: #1D4ED8;
+}
+.note-card.amber {
+  background: #FFFBEB;
+  border: 1.5px solid #FDE68A;
+  color: #92400E;
+}
+
+/* Rec hero */
+.rec-hero {
+  background: linear-gradient(140deg, var(--navy) 0%, var(--navy-mid) 60%, var(--navy-light) 100%);
+  border-radius: var(--radius-lg);
+  padding: 40px 44px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.rec-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+.rec-hero-inner { position: relative; z-index: 1; }
+
+.rec-eyebrow {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 14px;
+}
+.rec-model {
+  font-family: 'Syne', sans-serif;
+  font-size: 3.2rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: 4px;
+  letter-spacing: -0.02em;
+}
+.rec-series {
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 18px;
+}
+.rec-reason {
+  font-size: 0.92rem;
+  color: rgba(255,255,255,0.78);
+  line-height: 1.7;
+  max-width: 540px;
+  margin-bottom: 22px;
+}
+.rec-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.rec-badge {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 99px;
+  padding: 3px 13px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  font-family: 'Syne', sans-serif;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Spec tiles */
+.spec-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.spec-tile {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 16px;
+  text-align: center;
+}
+.spec-tile-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--navy);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.spec-tile-key {
+  font-size: 0.68rem;
+  color: var(--text-light);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+
+/* Next steps */
+.next-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-left: 4px solid var(--blue);
+  border-radius: var(--radius);
+  padding: 22px 26px;
+  margin-bottom: 16px;
+}
+.next-card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--navy);
+  margin-bottom: 10px;
+}
+.next-card-body {
+  font-size: 0.88rem;
+  color: var(--text-light);
+  line-height: 1.75;
+}
+.next-card-body strong { color: var(--text); }
+.next-card-body a { color: var(--blue); text-decoration: none; }
+.next-card-body a:hover { text-decoration: underline; }
+
+.restart-wrap {
+  text-align: center;
+  padding: 16px 0 4px;
+}
+.restart-btn {
+  background: none;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-light);
+  cursor: pointer;
+  text-decoration: underline;
+}
+.restart-btn:hover { color: var(--navy); }
+
+/* ── BROTHER HERO OVERRIDE ── */
+.rec-hero.brother-hero {
+  background: linear-gradient(140deg, #003a6b 0%, #004B87 60%, #005fa0 100%);
+}
+
+/* ── CATEGORY STEP ── */
+.cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cat-card input[type="radio"] { display: none; }
+.cat-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 32px 28px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  background: var(--surface);
+  transition: all 0.15s;
+  user-select: none;
+  height: 100%;
+  min-height: 210px;
+}
+.cat-card label:hover { border-color: var(--blue-border); background: var(--blue-glow); }
+.cat-card input:checked + label {
+  border-color: var(--blue);
+  background: var(--blue-glow);
+  box-shadow: inset 0 0 0 1px var(--blue);
+}
+.cat-icon { font-size: 2.6rem; line-height: 1; }
+.cat-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--navy);
+}
+.cat-sub { font-size: 0.8rem; color: var(--text-light); line-height: 1.5; }
+.cat-radio {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border-mid);
+  margin-top: auto;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+  background: var(--surface);
+  flex-shrink: 0;
+}
+.cat-card input:checked + label .cat-radio {
+  border-color: var(--blue); background: var(--blue);
+}
+.cat-card input:checked + label .cat-radio::after {
+  content: ''; width: 7px; height: 7px; border-radius: 50%; background: #fff;
+}
+
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ═══════════════════════════ SIDEBAR ═══════════════════════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <div class="sidebar-logo">
+        <img src="https://www.centralofficesupply.com/ws_content/custom/logo.png"
+             alt="Central Office Supply"
+             onerror="this.style.display='none'">
+      </div>
+
+      <div class="sidebar-headline" id="sidebar-headline">Find the Right<br>Machine</div>
+      <div class="sidebar-sub" id="sidebar-sub">Tell us what type of equipment you need and we'll point you in the right direction.</div>
+
+      <nav class="step-nav" id="step-nav">
+        <div class="snav-item active" id="snav-0">
+          <div class="snav-dot"><span>1</span></div>
+          <div class="snav-text">
+            <div class="snav-label">Your Needs</div>
+            <div class="snav-sub">Color, size &amp; current machine</div>
+          </div>
+        </div>
+        <div class="snav-item" id="snav-1">
+          <div class="snav-dot"><span>2</span></div>
+          <div class="snav-text">
+            <div class="snav-label">Print Volume</div>
+            <div class="snav-sub">Monthly page estimate</div>
+          </div>
+        </div>
+        <div class="snav-item" id="snav-2">
+          <div class="snav-dot"><span>3</span></div>
+          <div class="snav-text">
+            <div class="snav-label">Features</div>
+            <div class="snav-sub">Finishing &amp; add-ons</div>
+          </div>
+        </div>
+        <div class="snav-item" id="snav-3">
+          <div class="snav-dot"><span>4</span></div>
+          <div class="snav-text">
+            <div class="snav-label">Your Info</div>
+            <div class="snav-sub">Contact details</div>
+          </div>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-footer-eyebrow">Need help now?</div>
+        <div class="sidebar-contact">
+          <a href="tel:7856322177">785-632-2177</a>
+          <a href="mailto:sales@centralofficesupply.com">sales@centralofficesupply.com</a>
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════ CONTENT PANE ═══════════════════════════ -->
+  <main class="content-pane" id="content-pane">
+
+    <!-- FORM STEPS -->
+    <div class="form-area" id="form-area">
+
+      <!-- ── STEP CAT ── -->
+      <div class="step-card active" id="step-cat">
+        <div class="step-eyebrow">Get Started</div>
+        <h1 class="step-title">What Type of Machine<br>Are You Looking For?</h1>
+        <p class="step-desc">Choose the product category that best fits your office needs.</p>
+
+        <div class="field-group">
+          <div class="cat-grid">
+            <div class="cat-card">
+              <input type="radio" name="machine_type" id="mt-sharp" value="sharp">
+              <label for="mt-sharp">
+                <div class="cat-icon">🖨️</div>
+                <div class="cat-title">Full-Function Copy Machine</div>
+                <div class="cat-sub">High-volume office MFP with copying, full finishing options, and large paper capacity (Letter, Legal, Ledger)</div>
+                <div class="cat-radio"></div>
+              </label>
+            </div>
+            <div class="cat-card">
+              <input type="radio" name="machine_type" id="mt-brother" value="brother">
+              <label for="mt-brother">
+                <div class="cat-icon">💼</div>
+                <div class="cat-title">Desktop Workhorse Multi-Function</div>
+                <div class="cat-sub">Compact, reliable desktop printer for everyday office printing (Letter, Legal)</div>
+                <div class="cat-radio"></div>
+              </label>
+            </div>
+          </div>
+          <div class="err-msg" id="err-machine-type">Please select a machine type.</div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="goFromCategory()">Continue →</button>
+        </div>
+      </div>
+
+      <!-- ── STEP 0 (Sharp) ── -->
+      <div class="step-card" id="step-0">
+        <div class="step-eyebrow">Step 1 of 4</div>
+        <h1 class="step-title">Tell Us About<br>Your Print Needs</h1>
+        <p class="step-desc">We'll match you with the right Sharp MFP for your office.</p>
+
+        <div class="field-group">
+          <label class="field-label">Do you primarily print in color or black &amp; white?</label>
+          <p class="field-hint">We always recommend color first — gives you flexibility when you need it.</p>
+          <div class="rc-grid cols-2">
+            <div class="rc-item">
+              <input type="radio" name="color_pref" id="cp-color" value="color">
+              <label for="cp-color">
+                <div class="rc-icon">🎨</div>
+                <div class="rc-body">
+                  <div class="rc-main">Color</div>
+                  <div class="rc-sub">Full color printing</div>
+                </div>
+                <div class="rc-radio"></div>
+              </label>
+            </div>
+            <div class="rc-item">
+              <input type="radio" name="color_pref" id="cp-mono" value="mono">
+              <label for="cp-mono">
+                <div class="rc-icon">⬛</div>
+                <div class="rc-body">
+                  <div class="rc-main">Black &amp; White</div>
+                  <div class="rc-sub">Monochrome only</div>
+                </div>
+                <div class="rc-radio"></div>
+              </label>
+            </div>
+          </div>
+          <div class="err-msg" id="err-color">Please select a print type.</div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">What is the largest paper size you need?</label>
+          <div class="rc-grid cols-2">
+            <div class="rc-item">
+              <input type="radio" name="paper_size" id="ps-letter" value="letter">
+              <label for="ps-letter">
+                <div class="rc-icon">📄</div>
+                <div class="rc-body">
+                  <div class="rc-main">Up to 8.5×11</div>
+                  <div class="rc-sub">Letter size only</div>
+                </div>
+                <div class="rc-radio"></div>
+              </label>
+            </div>
+            <div class="rc-item">
+              <input type="radio" name="paper_size" id="ps-tabloid" value="tabloid">
+              <label for="ps-tabloid">
+                <div class="rc-icon">📋</div>
+                <div class="rc-body">
+                  <div class="rc-main">Up to 11×17</div>
+                  <div class="rc-sub">Tabloid / ledger size</div>
+                </div>
+                <div class="rc-radio"></div>
+              </label>
+            </div>
+          </div>
+          <div class="err-msg" id="err-paper">Please select a paper size.</div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Are you replacing an existing machine?</label>
+          <div class="rc-grid cols-2">
+            <div class="rc-item">
+              <input type="radio" name="replacing" id="rep-no" value="no">
+              <label for="rep-no">
+                <div class="rc-icon">✨</div>
+                <div class="rc-body">
+                  <div class="rc-main">New Addition</div>
+                  <div class="rc-sub">First machine or adding one</div>
+                </div>
+                <div class="rc-radio"></div>
+              </label>
+            </div>
+            <div class="rc-item">
+              <input type="radio" name="replacing" id="rep-yes" value="yes">
+              <label for="rep-yes">
+                <div class="rc-icon">🔄</div>
+                <div class="rc-body">
+                  <div class="rc-main">Replacing</div>
+                  <div class="rc-sub">Upgrading current equipment</div>
+                </div>
+                <div class="rc-radio"></div>
+              </label>
+            </div>
+          </div>
+          <div class="err-msg" id="err-replace">Please make a selection.</div>
+          <div id="replace-field">
+            <input type="text" id="current-machine"
+              placeholder="e.g. Sharp MX-3071, Xerox WorkCentre 7845…" maxlength="100">
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-ghost" onclick="prevStep(0)">← Back</button>
+          <button class="btn btn-primary" onclick="nextStep(0)">Continue →</button>
+        </div>
+      </div>
+
+      <!-- ── STEP 1 ── -->
+      <div class="step-card" id="step-1">
+        <div class="step-eyebrow">Step 2 of 4</div>
+        <h1 class="step-title">How Much Do<br>You Print?</h1>
+        <p class="step-desc">Monthly volume helps us size the right machine for your workload.</p>
+
+        <div class="field-group">
+          <label class="field-label">Estimated monthly print/copy volume</label>
+          <p class="field-hint">Include all pages — prints, copies, and anything that comes out of the machine.</p>
+          <div class="rc-grid cols-2">
+            <div class="rc-item">
+              <input type="radio" name="volume" id="vol-1" value="under2k">
+              <label for="vol-1">
+                <div class="rc-icon">🔬</div>
+                <div class="rc-body">
+                  <div class="rc-main">Under 2,000</div>
+                  <div class="rc-sub">Light office use</div>
+                </div>
+                <div class="rc-radio"></div>
+              </label>
+            </div>
+            <div class="rc-item">
+              <input type="radio" name="volume" id="vol-2" value="2k-5k">
+              <label for="vol-2">
+                <div class="rc-icon">🖨️</div>
+                <div class="rc-body">
+                  <div class="rc-main">2,000 – 5,000</div>
+                  <div class="rc-sub">Moderate daily printing</div>
+                </div>
+                <div class="rc-radio"></div>
+              </label>
+            </div>
+            <div class="rc-item">
+              <input type="radio" name="volume" id="vol-3" value="5k-10k">
+              <label for="vol-3">
+                <div class="rc-icon">📦</div>
+                <div class="rc-body">
+                  <div class="rc-main">5,000 – 10,000</div>
+                  <div class="rc-sub">High-volume workgroup</div>
+                </div>
+                <div class="rc-radio"></div>
+              </label>
+            </div>
+            <div class="rc-item">
+              <input type="radio" name="volume" id="vol-4" value="over10k">
+              <label for="vol-4">
+                <div class="rc-icon">🏭</div>
+                <div class="rc-body">
+                  <div class="rc-main">Over 10,000</div>
+                  <div class="rc-sub">Heavy production use</div>
+                </div>
+                <div class="rc-radio"></div>
+              </label>
+            </div>
+          </div>
+          <div class="err-msg" id="err-volume">Please select an estimated volume.</div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-ghost" onclick="prevStep(1)">← Back</button>
+          <button class="btn btn-primary" onclick="nextStep(1)">Continue →</button>
+        </div>
+      </div>
+
+      <!-- ── STEP 2 ── -->
+      <div class="step-card" id="step-2">
+        <div class="step-eyebrow">Step 3 of 4</div>
+        <h1 class="step-title">Features &amp;<br>Capabilities</h1>
+        <p class="step-desc">Select everything that applies — we'll make sure your machine covers it.</p>
+
+        <div class="field-group">
+          <div class="section-label">General Features</div>
+          <div class="ck-grid cols-2">
+            <label class="ck-item" id="chk-fax-wrap">
+              <input type="checkbox" id="chk-fax" value="fax" onchange="syncCheckStyle(this)">
+              <span class="ck-main">Fax Capability<span class="ck-sub">Fax module add-on</span></span>
+            </label>
+            <label class="ck-item" id="chk-holepunch-wrap">
+              <input type="checkbox" id="chk-holepunch" value="holepunch" onchange="syncCheckStyle(this)">
+              <span class="ck-main">Hole Punch<span class="ck-sub">Built-in punch unit</span></span>
+            </label>
+            <label class="ck-item" id="chk-hicap-wrap">
+              <input type="checkbox" id="chk-hicap" value="hicap" onchange="syncCheckStyle(this)">
+              <span class="ck-main">High Capacity Feeding<span class="ck-sub">Large paper tray / feeder deck</span></span>
+            </label>
+          </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <div class="field-group">
+          <div class="section-label">Finishing Options</div>
+          <p class="field-hint">Finishing requires an external finisher unit. Saddle stitch is only available on full-size MFPs.</p>
+          <div class="ck-grid cols-2">
+            <label class="ck-item" id="chk-staple-wrap">
+              <input type="checkbox" id="chk-staple" value="staple" onchange="syncCheckStyle(this)">
+              <span class="ck-main">Stapling<span class="ck-sub">Auto staple finisher</span></span>
+            </label>
+            <label class="ck-item" id="chk-saddle-wrap">
+              <input type="checkbox" id="chk-saddle" value="saddle" onchange="syncCheckStyle(this)">
+              <span class="ck-main">Saddle Stitch<span class="ck-sub">Booklet making / saddle stitch finisher</span></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-ghost" onclick="prevStep(2)">← Back</button>
+          <button class="btn btn-primary" onclick="nextStep(2)">Continue →</button>
+        </div>
+      </div>
+
+      <!-- ── STEP 3 ── -->
+      <div class="step-card" id="step-3">
+        <div class="step-eyebrow">Step 4 of 4</div>
+        <h1 class="step-title">Your Contact<br>Information</h1>
+        <p class="step-desc">We'll send your recommendation and follow up to make sure it's the right fit.</p>
+
+        <div class="input-row">
+          <div class="field-group">
+            <label class="field-label" for="c-name">Full Name *</label>
+            <input type="text" id="c-name" placeholder="Jane Smith" maxlength="80">
+            <div class="err-msg" id="err-name">Please enter your name.</div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="c-business">Business Name</label>
+            <input type="text" id="c-business" placeholder="Acme Corp" maxlength="100">
+          </div>
+        </div>
+
+        <div class="input-row">
+          <div class="field-group">
+            <label class="field-label" for="c-email">Email Address *</label>
+            <input type="email" id="c-email" placeholder="jane@acmecorp.com" maxlength="120">
+            <div class="err-msg" id="err-email">Please enter a valid email address.</div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="c-phone">Phone Number</label>
+            <input type="tel" id="c-phone" placeholder="(785) 555-0100" maxlength="20">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="c-notes">Anything else we should know?</label>
+          <textarea id="c-notes" rows="3"
+            placeholder="Special requirements, location, timeline, etc."
+            maxlength="500" style="resize:vertical;"></textarea>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-ghost" onclick="prevStep(3)">← Back</button>
+          <button class="btn btn-submit" id="submit-btn" onclick="submitForm()">Get My Recommendation →</button>
+        </div>
+        <div class="spinner-wrap" id="spinner">
+          <div class="spinner"></div>
+          <span>Sending your results…</span>
+        </div>
+        <div class="send-status" id="send-status"></div>
+      </div>
+
+      <!-- ── STEP B0 (Brother: color + replacing) ── -->
+      <div class="step-card" id="step-b0">
+        <div class="step-eyebrow">Step 1 of 3</div>
+        <h1 class="step-title">Color or Black<br>&amp; White?</h1>
+        <p class="step-desc">Choose your print preference and tell us about your current setup.</p>
+
+        <div class="field-group">
+          <label class="field-label">Do you primarily print in color or black &amp; white?</label>
+          <div class="rc-grid cols-2">
+            <div class="rc-item">
+              <input type="radio" name="b_color_pref" id="b-cp-color" value="color">
+              <label for="b-cp-color">
+                <div class="rc-icon">🎨</div>
+                <div class="rc-body"><div class="rc-main">Color</div><div class="rc-sub">Full color printing</div></div>
+                <div class="rc-radio"></div>
+              </label>
+            </div>
+            <div class="rc-item">
+              <input type="radio" name="b_color_pref" id="b-cp-mono" value="mono">
+              <label for="b-cp-mono">
+                <div class="rc-icon">⬛</div>
+                <div class="rc-body"><div class="rc-main">Black &amp; White</div><div class="rc-sub">Monochrome only</div></div>
+                <div class="rc-radio"></div>
+              </label>
+            </div>
+          </div>
+          <div class="err-msg" id="b-err-color">Please select a print type.</div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Are you replacing an existing machine?</label>
+          <div class="rc-grid cols-2">
+            <div class="rc-item">
+              <input type="radio" name="b_replacing" id="b-rep-no" value="no">
+              <label for="b-rep-no">
+                <div class="rc-icon">✨</div>
+                <div class="rc-body"><div class="rc-main">New Addition</div><div class="rc-sub">First machine or adding one</div></div>
+                <div class="rc-radio"></div>
+              </label>
+            </div>
+            <div class="rc-item">
+              <input type="radio" name="b_replacing" id="b-rep-yes" value="yes">
+              <label for="b-rep-yes">
+                <div class="rc-icon">🔄</div>
+                <div class="rc-body"><div class="rc-main">Replacing</div><div class="rc-sub">Upgrading current equipment</div></div>
+                <div class="rc-radio"></div>
+              </label>
+            </div>
+          </div>
+          <div class="err-msg" id="b-err-replace">Please make a selection.</div>
+          <div id="b-replace-field" style="display:none; margin-top:10px;">
+            <input type="text" id="b-current-machine" placeholder="e.g. Brother MFC-L5915DW, HP LaserJet…" maxlength="100">
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-ghost" onclick="prevBrotherStep(0)">← Back</button>
+          <button class="btn btn-primary" onclick="nextBrotherStep(0)">Continue →</button>
+        </div>
+      </div>
+
+      <!-- ── STEP B1 (Brother: volume) ── -->
+      <div class="step-card" id="step-b1">
+        <div class="step-eyebrow">Step 2 of 3</div>
+        <h1 class="step-title">How Much Do<br>You Print?</h1>
+        <p class="step-desc">Monthly volume helps us find the right capacity desktop printer.</p>
+
+        <div class="field-group">
+          <label class="field-label">Estimated monthly print/copy volume</label>
+          <div class="rc-grid cols-2">
+            <div class="rc-item">
+              <input type="radio" name="b_volume" id="b-vol-1" value="br-under500">
+              <label for="b-vol-1">
+                <div class="rc-icon">📋</div>
+                <div class="rc-body"><div class="rc-main">Under 500</div><div class="rc-sub">Light daily use</div></div>
+                <div class="rc-radio"></div>
+              </label>
+            </div>
+            <div class="rc-item">
+              <input type="radio" name="b_volume" id="b-vol-2" value="br-500-750">
+              <label for="b-vol-2">
+                <div class="rc-icon">🖨️</div>
+                <div class="rc-body"><div class="rc-main">500 – 750</div><div class="rc-sub">Moderate daily printing</div></div>
+                <div class="rc-radio"></div>
+              </label>
+            </div>
+            <div class="rc-item">
+              <input type="radio" name="b_volume" id="b-vol-3" value="br-750-1000">
+              <label for="b-vol-3">
+                <div class="rc-icon">📦</div>
+                <div class="rc-body"><div class="rc-main">750 – 1,000</div><div class="rc-sub">Steady workgroup volume</div></div>
+                <div class="rc-radio"></div>
+              </label>
+            </div>
+            <div class="rc-item">
+              <input type="radio" name="b_volume" id="b-vol-4" value="br-over1k">
+              <label for="b-vol-4">
+                <div class="rc-icon">🏢</div>
+                <div class="rc-body"><div class="rc-main">Over 1,000</div><div class="rc-sub">High-output desktop use</div></div>
+                <div class="rc-radio"></div>
+              </label>
+            </div>
+          </div>
+          <div class="err-msg" id="b-err-volume">Please select an estimated volume.</div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-ghost" onclick="prevBrotherStep(1)">← Back</button>
+          <button class="btn btn-primary" onclick="nextBrotherStep(1)">Continue →</button>
+        </div>
+      </div>
+
+      <!-- ── STEP B2 (Brother: contact) ── -->
+      <div class="step-card" id="step-b2">
+        <div class="step-eyebrow">Step 3 of 3</div>
+        <h1 class="step-title">Your Contact<br>Information</h1>
+        <p class="step-desc">We'll send your recommendation and follow up to confirm it's the right fit.</p>
+
+        <div class="input-row">
+          <div class="field-group">
+            <label class="field-label" for="b-name">Full Name *</label>
+            <input type="text" id="b-name" placeholder="Jane Smith" maxlength="80">
+            <div class="err-msg" id="b-err-name">Please enter your name.</div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="b-business">Business Name</label>
+            <input type="text" id="b-business" placeholder="Acme Corp" maxlength="100">
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="field-group">
+            <label class="field-label" for="b-email">Email Address *</label>
+            <input type="email" id="b-email" placeholder="jane@acmecorp.com" maxlength="120">
+            <div class="err-msg" id="b-err-email">Please enter a valid email address.</div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="b-phone">Phone Number</label>
+            <input type="tel" id="b-phone" placeholder="(785) 555-0100" maxlength="20">
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="b-notes">Anything else we should know?</label>
+          <textarea id="b-notes" rows="3" placeholder="Special requirements, location, timeline, etc." maxlength="500" style="resize:vertical;"></textarea>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-ghost" onclick="prevBrotherStep(2)">← Back</button>
+          <button class="btn btn-submit" id="b-submit-btn" onclick="submitBrotherForm()">Get My Recommendation →</button>
+        </div>
+        <div class="spinner-wrap" id="b-spinner">
+          <div class="spinner"></div>
+          <span>Sending your results…</span>
+        </div>
+        <div class="send-status" id="b-send-status"></div>
+      </div>
+
+    </div><!-- /form-area -->
+
+    <!-- ═══════════════════════════ RESULT SECTION ═══════════════════════════ -->
+    <div id="result-section">
+
+      <div class="note-card amber" id="color-suggest-note" style="display:none;">
+        <strong>💡 Color Recommendation:</strong> While you indicated a preference for black &amp; white,
+        we'd like to suggest considering a color MFP — the price difference is often minimal and gives you
+        the flexibility to print in color whenever the need arises.
+      </div>
+
+      <div class="note-card blue" id="speed-bump-note" style="display:none;"></div>
+
+      <div class="rec-hero" id="rec-hero">
+        <div class="rec-hero-inner">
+          <div class="rec-eyebrow" id="rec-eyebrow">Your Sharp MFP Recommendation</div>
+          <div class="rec-model" id="rec-model-name">—</div>
+          <div class="rec-series" id="rec-series-name">—</div>
+          <div class="rec-reason" id="rec-reason">—</div>
+          <div class="rec-badges" id="rec-badges"></div>
+        </div>
+      </div>
+
+      <div class="spec-tiles">
+        <div class="spec-tile">
+          <div class="spec-tile-val" id="spec-speed">—</div>
+          <div class="spec-tile-key">Speed (ppm)</div>
+        </div>
+        <div class="spec-tile">
+          <div class="spec-tile-val" id="spec-color">—</div>
+          <div class="spec-tile-key">Print Type</div>
+        </div>
+        <div class="spec-tile">
+          <div class="spec-tile-val" id="spec-paper">—</div>
+          <div class="spec-tile-key">Max Paper Size</div>
+        </div>
+      </div>
+
+      <div class="next-card">
+        <div class="next-card-title">What Happens Next</div>
+        <div class="next-card-body">
+          A full spec sheet and detailed recommendation has been emailed to you.
+          A member of our team will reach out to confirm this is the right machine for your workflow —
+          no pressure, just making sure you get exactly what you need.<br><br>
+          <strong>Questions right now?</strong> Call us at
+          <a href="tel:7856322177"><strong>785-632-2177</strong></a>
+          or email <a href="mailto:sales@centralofficesupply.com"><strong>sales@centralofficesupply.com</strong></a>.
+        </div>
+      </div>
+
+      <div class="restart-wrap">
+        <button class="restart-btn" onclick="restartTool()">← Start over / different needs</button>
+      </div>
+
+    </div><!-- /result-section -->
+
+  </main>
+</div>
+
+<!-- ═══════════════════════════ JAVASCRIPT ═══════════════════════════ -->
+<script>
+const EMAILJS_PUBLIC_KEY  = 'ctV7xKayQp4LELp4c';
+const EMAILJS_SERVICE_ID  = 'service_k86hc9g';
+const EMAILJS_TEMPLATE_ID = 'template_v5boyv2';
+const SALES_EMAIL = 'sales@centralofficesupply.com';
+const BCC_EMAIL   = 'logan@centralofficesupply.com';
+
+// ─────────────────────────────────────────────────────────────────────
+//  MODEL SPECS
+// ─────────────────────────────────────────────────────────────────────
+const MODELS = {
+  'color-small-535': {
+    model: 'Sharp BP-C535WD', series: 'BP-C Series — Compact Color MFP',
+    speed: '35', colorType: 'Color', maxPaper: '8.5×14"',
+    reason: 'The BP-C535WD is a smart, compact color MFP for lighter print volumes. It delivers 35 ppm color and mono output, built-in Wi-Fi, a 7" touchscreen, and cloud connectivity — all in a desktop footprint that fits virtually any office.',
+    badges: ['Color MFP', 'Compact', '35 ppm', 'Up to 8.5×14"'],
+    specPdfUrl: 'https://business.sharpusa.com/portals/0/downloads/Literature/BP_C535WD_C545WD_Spec_Sheet.pdf',
+    productUrl: 'https://business.sharpusa.com/Document-Systems/Models/Details/BP-C535WD',
+    fullSpecs: [
+      'Type: Desktop color multi-function printer',
+      'Print/Copy Speed: 35 ppm (color & mono, 8.5×11")',
+      'Functions: Copy, Print, Network Print, Network Scan, Document Filing, Fax (standard)',
+      'Max Original Size: 8.5" × 14"', 'Max Output Size: 8.5" × 14"',
+      'Document Feeder: 100-sheet DSPF (scans up to 130 ipm two-sided)',
+      'Duplexing: Standard automatic duplex copy & print',
+      'Finishing Options: Optional 30-sheet staple inner finisher (BP-FN17). Saddle stitch not available on this series.',
+    ],
+    notes: 'Max paper size is 8.5×14" (legal). 11×17 tabloid is not supported on this model. Saddle stitch finishing is not available on this series.'
+  },
+  'color-small': {
+    model: 'Sharp BP-C545WD', series: 'BP-C Series — Compact Color MFP',
+    speed: '45', colorType: 'Color', maxPaper: '8.5×14"',
+    reason: 'The BP-C545WD is an excellent compact color MFP for everyday office printing. At 45 ppm, it handles moderate volumes quickly and efficiently, with built-in Wi-Fi, a 7" touchscreen, and full cloud connectivity — all without the footprint of a full-size machine.',
+    badges: ['Color MFP', 'Compact', '45 ppm', 'Up to 8.5×14"'],
+    specPdfUrl: 'https://business.sharpusa.com/portals/0/downloads/Literature/BP_C535WD_C545WD_Spec_Sheet.pdf',
+    productUrl: 'https://business.sharpusa.com/Document-Systems/Models/Details/BP-C545WD',
+    fullSpecs: [
+      'Type: Desktop color multi-function printer',
+      'Print/Copy Speed: 45 ppm (color & mono, 8.5×11")',
+      'Functions: Copy, Print, Network Print, Network Scan, Document Filing, Fax (standard)',
+      'Max Original Size: 8.5" × 14"', 'Max Output Size: 8.5" × 14"',
+      'Document Feeder: 100-sheet DSPF (scans up to 130 ipm two-sided)',
+      'Duplexing: Standard automatic duplex copy & print',
+      'Finishing Options: Optional 30-sheet staple inner finisher (BP-FN17). Saddle stitch not available on this series.',
+    ],
+    notes: 'Max paper size is 8.5×14" (legal). 11×17 tabloid is not supported on this model. Saddle stitch finishing is not available on this series.'
+  },
+  'mono-small-540': {
+    model: 'Sharp BP-B540WR', series: 'BP-B Series — Compact Mono MFP',
+    speed: '40', colorType: 'Monochrome', maxPaper: '8.5×14"',
+    reason: 'The BP-B540WR is a dependable compact monochrome MFP for offices that print primarily black and white documents. Fast, efficient, and straightforward to manage with a low cost per page.',
+    badges: ['Mono MFP', 'Compact', '40 ppm', 'Up to 8.5×14"'],
+    specPdfUrl: 'https://business.sharpusa.com/portals/0/downloads/Literature/BP-B540WR-BP-B550WD_Specification-Sheet.pdf',
+    productUrl: 'https://business.sharpusa.com/Document-Systems/Models/Details/BP-B540WR',
+    fullSpecs: [
+      'Type: Desktop monochrome multi-function printer',
+      'Print/Copy Speed: 40 ppm (monochrome, 8.5×11")',
+      'Functions: Copy, Print, Network Print, Network Scan, Document Filing, Fax (standard)',
+      'Max Original Size: 8.5" × 14"', 'Max Output Size: 8.5" × 14"',
+      'Document Feeder: DSPF, scans both sides in one pass',
+      'Duplexing: Standard automatic duplex copy & print',
+      'Finishing Options: Not available on this series.',
+    ],
+    notes: 'Max paper size is 8.5×14" (legal). 11×17 tabloid is not supported on this model. Finishing options (staple, saddle stitch) are not available on this series.'
+  },
+  'mono-small': {
+    model: 'Sharp BP-B550WD', series: 'BP-B Series — Compact Mono MFP',
+    speed: '50', colorType: 'Monochrome', maxPaper: '8.5×14"',
+    reason: 'The BP-B550WD is a fast, reliable compact monochrome MFP. At 50 ppm it handles steady black and white print volumes with ease, and keeps costs low with an efficient toner system.',
+    badges: ['Mono MFP', 'Compact', '50 ppm', 'Up to 8.5×14"'],
+    specPdfUrl: 'https://business.sharpusa.com/portals/0/downloads/Literature/BP-B540WR-BP-B550WD_Specification-Sheet.pdf',
+    productUrl: 'https://business.sharpusa.com/Document-Systems/Models/Details/BP-B550WD',
+    fullSpecs: [
+      'Type: Desktop monochrome multi-function printer',
+      'Print/Copy Speed: 50 ppm (monochrome, 8.5×11")',
+      'Functions: Copy, Print, Network Print, Network Scan, Document Filing, Fax (standard)',
+      'Max Original Size: 8.5" × 14"', 'Max Output Size: 8.5" × 14"',
+      'Document Feeder: DSPF, scans both sides in one pass',
+      'Duplexing: Standard automatic duplex copy & print',
+      'Finishing Options: Not available on this series.',
+    ],
+    notes: 'Max paper size is 8.5×14" (legal). 11×17 tabloid is not supported on this model. Finishing options (staple, saddle stitch) are not available on this series.'
+  },
+  'color-mid': {
+    model: 'Sharp BP-70C36', series: 'BP-70 Advanced Series — Full-Size Color MFP',
+    speed: '36', colorType: 'Color', maxPaper: '11×17"',
+    reason: 'The BP-70C36 is a full-featured Advanced Series color MFP with full 11×17 tabloid support. A reliable workhorse for moderate-volume offices, it comes equipped with a 10.1" touchscreen, 300-sheet DSPF, and a complete suite of finishing and workflow options.',
+    badges: ['Color MFP', 'Full Size', '36 ppm', '11×17 Capable'],
+    specPdfUrl: 'https://business.sharpusa.com/portals/0/downloads/Literature/BP-70C31_70C36_70C45-Specification-Sheet.pdf',
+    productUrl: 'https://business.sharpusa.com/document-systems/models/details/bp-70c36',
+    fullSpecs: [
+      'Type: Color multi-function digital document system',
+      'Print/Copy Speed: 36 ppm (color & mono, 8.5×11")',
+      'Functions: Copy, Print, Network Print, Network Scan, Document Filing, Fax (optional)',
+      'Max Original Size: 11" × 17"', 'Max Output Size: 12" × 18"',
+      'Document Feeder: 300-sheet DSPF with double-feed detection (optional); scans up to 280 ipm',
+      'Duplexing: Standard automatic duplex copy & print',
+      'Finishing Options: Inner finisher, booklet/saddle stitch finisher, hole punch, inner folding unit',
+    ],
+    notes: ''
+  },
+  'color-mid-45': {
+    model: 'Sharp BP-70C45', series: 'BP-70 Advanced Series — Full-Size Color MFP',
+    speed: '45', colorType: 'Color', maxPaper: '11×17"',
+    reason: 'The BP-70C45 is the sweet spot of the Advanced Series — 45 ppm color and mono output, full 11×17 support, and a complete set of finishing options. Built for busy workgroups that need consistent, high-quality output day in and day out.',
+    badges: ['Color MFP', 'Full Size', '45 ppm', '11×17 Capable'],
+    specPdfUrl: 'https://business.sharpusa.com/portals/0/downloads/Literature/BP-70C31_70C36_70C45-Specification-Sheet.pdf',
+    productUrl: 'https://business.sharpusa.com/document-systems/models/details/bp-70c45',
+    fullSpecs: [
+      'Type: Color multi-function digital document system',
+      'Print/Copy Speed: 45 ppm (color & mono, 8.5×11")',
+      'Functions: Copy, Print, Network Print, Network Scan, Document Filing, Fax (optional)',
+      'Max Original Size: 11" × 17"', 'Max Output Size: 12" × 18"',
+      'Document Feeder: 300-sheet DSPF with double-feed detection (optional); scans up to 280 ipm',
+      'Duplexing: Standard automatic duplex copy & print',
+      'Finishing Options: Inner finisher, booklet/saddle stitch finisher, hole punch, inner folding unit',
+    ],
+    notes: ''
+  },
+  'mono-mid': {
+    model: 'Sharp BP-70M36', series: 'BP-70 Advanced Series — Full-Size Mono MFP',
+    speed: '36', colorType: 'Monochrome', maxPaper: '11×17"',
+    reason: 'The BP-70M36 is a dependable full-size monochrome MFP with full 11×17 tabloid capability. It delivers a low cost per page with high reliability — ideal for offices that print predominantly black and white documents at moderate volume.',
+    badges: ['Mono MFP', 'Full Size', '36 ppm', '11×17 Capable'],
+    specPdfUrl: 'https://business.sharpusa.com/portals/0/downloads/Literature/BP-70M31_70M36_70M45-Specification-Sheet.pdf',
+    productUrl: 'https://business.sharpusa.com/Document-Systems/Models/Details/BP-70M36',
+    fullSpecs: [
+      'Type: Monochrome multi-function digital document system',
+      'Print/Copy Speed: 36 ppm (monochrome, 8.5×11")',
+      'Functions: Copy, Print, Network Print, Network Scan, Document Filing, Fax (optional)',
+      'Max Original Size: 11" × 17"', 'Max Output Size: 12" × 18"',
+      'Document Feeder: 300-sheet DSPF; scans up to 280 ipm',
+      'Duplexing: Standard automatic duplex copy & print',
+      'Finishing Options: Finisher, booklet/saddle stitch finisher, hole punch, inner folding unit',
+    ],
+    notes: ''
+  },
+  'mono-mid-45': {
+    model: 'Sharp BP-70M45', series: 'BP-70 Advanced Series — Full-Size Mono MFP',
+    speed: '45', colorType: 'Monochrome', maxPaper: '11×17"',
+    reason: 'The BP-70M45 delivers fast, high-volume monochrome printing with full 11×17 tabloid support. A strong choice for offices with heavy document output that want maximum cost efficiency on black and white printing.',
+    badges: ['Mono MFP', 'Full Size', '45 ppm', '11×17 Capable'],
+    specPdfUrl: 'https://business.sharpusa.com/portals/0/downloads/Literature/BP-70M31_70M36_70M45-Specification-Sheet.pdf',
+    productUrl: 'https://business.sharpusa.com/Document-Systems/Models/Details/BP-70M45',
+    fullSpecs: [
+      'Type: Monochrome multi-function digital document system',
+      'Print/Copy Speed: 45 ppm (monochrome, 8.5×11")',
+      'Functions: Copy, Print, Network Print, Network Scan, Document Filing, Fax (optional)',
+      'Max Original Size: 11" × 17"', 'Max Output Size: 12" × 18"',
+      'Document Feeder: 300-sheet DSPF; scans up to 280 ipm',
+      'Duplexing: Standard automatic duplex copy & print',
+      'Finishing Options: Finisher, booklet/saddle stitch finisher, hole punch, inner folding unit',
+    ],
+    notes: ''
+  },
+  'color-high': {
+    model: 'Sharp BP-71C55', series: 'BP-71 Advanced Series — High-Speed Color MFP',
+    speed: '55', colorType: 'Color', maxPaper: '11×17"',
+    reason: 'At your print volume, you need a machine built for sustained high output. The BP-71C55 is a heavy-duty Advanced Series color MFP designed for demanding workgroups — 55 ppm, full 11×17 support, and a complete range of high-capacity finishing options.',
+    badges: ['Color MFP', 'High Speed', '55 ppm', '11×17 Capable'],
+    specPdfUrl: 'https://business.sharpusa.com/portals/0/downloads/Literature/Specification-Sheet-BP-71C55-65.pdf',
+    productUrl: 'https://business.sharpusa.com/Document-Systems/Models/Details/BP-71C55',
+    fullSpecs: [
+      'Type: Color multi-function digital document system',
+      'Print/Copy Speed: 55 ppm (color & mono, 8.5×11")',
+      'Functions: Copy, Print, Network Print, Network Scan, Document Filing, Fax (optional)',
+      'Max Original Size: 11" × 17"', 'Max Output Size: 12" × 18"',
+      'Document Feeder: 300-sheet DSPF with double-feed detection (optional)',
+      'Duplexing: Standard automatic duplex copy & print',
+      'Finishing Options: High-capacity finisher, booklet/saddle stitch finisher, hole punch',
+    ],
+    notes: ''
+  },
+  'color-high-65': {
+    model: 'Sharp BP-71C65', series: 'BP-71 Advanced Series — High-Speed Color MFP',
+    speed: '65', colorType: 'Color', maxPaper: '11×17"',
+    reason: 'The BP-71C65 is Sharp\'s highest-speed Advanced Series color MFP. At 65 ppm, it\'s built for very high-volume environments that demand maximum throughput, consistent quality, and the full range of finishing and workflow capabilities.',
+    badges: ['Color MFP', 'Production Class', '65 ppm', '11×17 Capable'],
+    specPdfUrl: 'https://business.sharpusa.com/portals/0/downloads/Literature/Specification-Sheet-BP-71C55-65.pdf',
+    productUrl: 'https://business.sharpusa.com/Document-Systems/Models/Details/BP-71C65',
+    fullSpecs: [
+      'Type: Color multi-function digital document system',
+      'Print/Copy Speed: 65 ppm (color & mono, 8.5×11")',
+      'Functions: Copy, Print, Network Print, Network Scan, Document Filing, Fax (optional)',
+      'Max Original Size: 11" × 17"', 'Max Output Size: 12" × 18"',
+      'Document Feeder: 300-sheet DSPF with double-feed detection (optional)',
+      'Duplexing: Standard automatic duplex copy & print',
+      'Finishing Options: High-capacity finisher, booklet/saddle stitch finisher, hole punch',
+    ],
+    notes: ''
+  },
+  'mono-high': {
+    model: 'Sharp BP-70M55', series: 'BP-70 Advanced Series — High-Speed Mono MFP',
+    speed: '55', colorType: 'Monochrome', maxPaper: '11×17"',
+    reason: 'The BP-70M55 is purpose-built for heavy monochrome output. At 55 ppm with full 11×17 tabloid support, it keeps pace with demanding print environments while keeping your cost per page low.',
+    badges: ['Mono MFP', 'High Speed', '55 ppm', '11×17 Capable'],
+    specPdfUrl: 'https://business.sharpusa.com/portals/0/downloads/Literature/BP-70M55_70M65-Specification-Sheet.pdf',
+    productUrl: 'https://business.sharpusa.com/Document-Systems/Models/Details/BP-70M55',
+    fullSpecs: [
+      'Type: Monochrome multi-function digital document system',
+      'Print/Copy Speed: 55 ppm (monochrome, 8.5×11")',
+      'Functions: Copy, Print, Network Print, Network Scan, Document Filing, Fax (optional)',
+      'Max Original Size: 11" × 17"', 'Max Output Size: 12" × 18"',
+      'Document Feeder: 300-sheet DSPF; scans up to 280 ipm',
+      'Duplexing: Standard automatic duplex copy & print',
+      'Finishing Options: High-capacity finisher, booklet/saddle stitch finisher, hole punch',
+    ],
+    notes: ''
+  },
+  'mono-high-65': {
+    model: 'Sharp BP-70M65', series: 'BP-70 Advanced Series — High-Speed Mono MFP',
+    speed: '65', colorType: 'Monochrome', maxPaper: '11×17"',
+    reason: 'The BP-70M65 is the highest-output monochrome MFP in our Sharp lineup. At 65 ppm with full 11×17 support, it\'s the right machine for offices with very high document volume that need maximum throughput and uptime.',
+    badges: ['Mono MFP', 'High Speed', '65 ppm', '11×17 Capable'],
+    specPdfUrl: 'https://business.sharpusa.com/portals/0/downloads/Literature/BP-70M55_70M65-Specification-Sheet.pdf',
+    productUrl: 'https://business.sharpusa.com/Document-Systems/Models/Details/BP-70M65',
+    fullSpecs: [
+      'Type: Monochrome multi-function digital document system',
+      'Print/Copy Speed: 65 ppm (monochrome, 8.5×11")',
+      'Functions: Copy, Print, Network Print, Network Scan, Document Filing, Fax (optional)',
+      'Max Original Size: 11" × 17"', 'Max Output Size: 12" × 18"',
+      'Document Feeder: 300-sheet DSPF; scans up to 280 ipm',
+      'Duplexing: Standard automatic duplex copy & print',
+      'Finishing Options: High-capacity finisher, booklet/saddle stitch finisher, hole punch',
+    ],
+    notes: ''
+  },
+
+  // ── BROTHER MODELS ────────────────────────────────────────────────
+  'brother-color-xs': {
+    model: 'Brother MFC-L3780CDW', series: 'Brother MFC-L3 Series — Compact Color Laser All-in-One',
+    speed: '31', colorType: 'Color', maxPaper: '8.5×14"',
+    reason: 'The MFC-L3780CDW is a compact, fast color laser all-in-one built for everyday office use. At 31 ppm and with single-pass duplex scanning, it handles light-to-moderate workloads efficiently with a small desktop footprint.',
+    badges: ['Color Laser', 'Compact Desktop', '31 ppm', 'Up to 8.5×14"'],
+    specPdfUrl: 'https://www.brother-usa.com/-/media/brother/product-catalog-media/documents/2024/06/25/20/02/mfc-l3780cdw-2-page-brochure.pdf',
+    productUrl: 'https://www.brother-usa.com/products/mfcl3780cdw',
+    fullSpecs: [
+      'Type: Desktop color laser multi-function printer',
+      'Print/Copy Speed: 31 ppm (color & mono, 8.5×11")',
+      'Functions: Copy, Print, Network Print, Network Scan, Fax (standard)',
+      'Max Original Size: 8.5" × 14"', 'Max Output Size: 8.5" × 14"',
+      'Document Feeder: 50-sheet ADF with single-pass duplex scanning',
+      'Duplexing: Standard automatic duplex print, scan, and copy',
+      'Finishing Options: Not available',
+    ],
+    notes: 'Max paper size is 8.5×14" (legal). 11×17 tabloid is not supported. No finishing options available on this model.'
+  },
+  'brother-color-s': {
+    model: 'Brother MFC-L8970CDW', series: 'Brother MFC-L8 Series — Business Color Laser All-in-One',
+    speed: '33', colorType: 'Color', maxPaper: '8.5×14"',
+    reason: 'The MFC-L8970CDW is a business-grade color laser all-in-one built for steady workgroup use. At 33 ppm with an 80-sheet ADF and a 7" touchscreen, it balances speed, connectivity, and ease of use in a reliable desktop package.',
+    badges: ['Color Laser', 'Business Desktop', '33 ppm', 'Up to 8.5×14"'],
+    specPdfUrl: 'https://www.brother-usa.com/-/media/brother/product-catalog-media/documents/2025/09/22/18/54/mfc-l8970cdw_2pgbrochure.pdf',
+    productUrl: 'https://www.brother-usa.com/products/mfcl8970cdw',
+    fullSpecs: [
+      'Type: Business color laser multi-function printer',
+      'Print/Copy Speed: 33 ppm (color & mono, 8.5×11")',
+      'Functions: Copy, Print, Network Print, Network Scan, Fax (standard)',
+      'Max Original Size: 8.5" × 14"', 'Max Output Size: 8.5" × 14"',
+      'Document Feeder: 80-sheet ADF with duplex scanning',
+      'Duplexing: Standard automatic duplex print and scan',
+      'Finishing Options: Not available',
+    ],
+    notes: 'Max paper size is 8.5×14" (legal). 11×17 tabloid is not supported. No finishing options available on this model.'
+  },
+  'brother-color-m': {
+    model: 'Brother MFC-L9670CDW', series: 'Brother MFC-L9 Series — Enterprise Color Laser All-in-One',
+    speed: '42', colorType: 'Color', maxPaper: '8.5×14"',
+    reason: 'The MFC-L9670CDW is Brother\'s highest-output desktop color laser all-in-one. At 42 ppm with a 100-sheet ADF capable of 104 ipm duplex scanning, it handles demanding color workloads with enterprise-grade reliability.',
+    badges: ['Color Laser', 'Enterprise Desktop', '42 ppm', 'Up to 8.5×14"'],
+    specPdfUrl: 'https://www.brother-usa.com/-/media/brother/product-catalog-media/documents/2026/04/20/14/21/mfc-l9670cdn_2pgbrochure.pdf',
+    productUrl: 'https://www.brother-usa.com/products/mfcl9670cdw',
+    fullSpecs: [
+      'Type: Enterprise color laser multi-function printer',
+      'Print/Copy Speed: 42 ppm (color & mono, 8.5×11")',
+      'Functions: Copy, Print, Network Print, Network Scan, Fax (standard)',
+      'Max Original Size: 8.5" × 14"', 'Max Output Size: 8.5" × 14"',
+      'Document Feeder: 100-sheet ADF with duplex scanning at up to 104 ipm',
+      'Duplexing: Standard automatic duplex print and scan',
+      'Finishing Options: Not available',
+    ],
+    notes: 'Max paper size is 8.5×14" (legal). 11×17 tabloid is not supported. No finishing options available on this model.'
+  },
+  'brother-mono-xs': {
+    model: 'Brother MFC-L2820DW', series: 'Brother MFC-L2 Series — Compact Mono Laser All-in-One',
+    speed: '34', colorType: 'Monochrome', maxPaper: '8.5×14"',
+    reason: 'The MFC-L2820DW is a fast, compact monochrome laser all-in-one for offices with lighter print volumes. At 34 ppm with wireless connectivity and a small footprint, it\'s an efficient, low-cost-per-page solution for everyday black and white printing.',
+    badges: ['Mono Laser', 'Compact Desktop', '34 ppm', 'Up to 8.5×14"'],
+    specPdfUrl: 'https://www.brother-usa.com/-/media/brother/product-catalog-media/documents/2023/12/14/22/00/mfc-l2820dw_brochure.pdf',
+    productUrl: 'https://www.brother-usa.com/products/mfcl2820dw',
+    fullSpecs: [
+      'Type: Compact monochrome laser multi-function printer',
+      'Print/Copy Speed: 34 ppm (monochrome, 8.5×11")',
+      'Functions: Copy, Print, Network Print, Network Scan, Fax (standard)',
+      'Max Original Size: 8.5" × 14"', 'Max Output Size: 8.5" × 14"',
+      'Document Feeder: 50-sheet ADF',
+      'Duplexing: Standard automatic duplex printing',
+      'Finishing Options: Not available',
+    ],
+    notes: 'Max paper size is 8.5×14" (legal). 11×17 tabloid is not supported. No finishing options available on this model.'
+  },
+  'brother-mono-s': {
+    model: 'Brother MFC-L2980DW', series: 'Brother MFC-L2 Series — Compact Mono Laser All-in-One',
+    speed: '36', colorType: 'Monochrome', maxPaper: '8.5×14"',
+    reason: 'The MFC-L2980DW is a capable compact monochrome laser all-in-one with single-pass duplex scanning. At 36 ppm, it handles moderate black and white workloads efficiently with full two-sided print, scan, and copy as standard.',
+    badges: ['Mono Laser', 'Compact Desktop', '36 ppm', 'Up to 8.5×14"'],
+    specPdfUrl: 'https://www.brother-usa.com/-/media/brother/product-catalog-media/documents/mfc-l2980dw_2pgbrochure.pdf',
+    productUrl: 'https://www.brother-usa.com/products/mfcl2980dw',
+    fullSpecs: [
+      'Type: Compact monochrome laser multi-function printer',
+      'Print/Copy Speed: 36 ppm (monochrome, 8.5×11")',
+      'Functions: Copy, Print, Network Print, Network Scan, Fax (standard)',
+      'Max Original Size: 8.5" × 14"', 'Max Output Size: 8.5" × 14"',
+      'Document Feeder: 50-sheet ADF with single-pass duplex scanning',
+      'Duplexing: Standard automatic duplex print, scan, and copy',
+      'Finishing Options: Not available',
+    ],
+    notes: 'Max paper size is 8.5×14" (legal). 11×17 tabloid is not supported. No finishing options available on this model.'
+  },
+  'brother-mono-m': {
+    model: 'Brother MFC-L5915DW', series: 'Brother MFC-L5 Series — Business Mono Laser All-in-One',
+    speed: '50', colorType: 'Monochrome', maxPaper: '8.5×14"',
+    reason: 'The MFC-L5915DW is a fast, high-volume monochrome laser all-in-one built for busy workgroups. At 50 ppm with a 70-sheet single-pass duplex ADF and expandable paper capacity up to 1,390 sheets, it handles demanding black and white output with ease.',
+    badges: ['Mono Laser', 'Business Desktop', '50 ppm', 'Up to 8.5×14"'],
+    specPdfUrl: 'https://www.brother-usa.com/-/media/brother/product-catalog-media/documents/2025/02/28/14/06/mfc-l5915dw_2pgbrochure.pdf',
+    productUrl: 'https://www.brother-usa.com/products/mfcl5915dw',
+    fullSpecs: [
+      'Type: Business monochrome laser multi-function printer',
+      'Print/Copy Speed: 50 ppm (monochrome, 8.5×11")',
+      'Functions: Copy, Print, Network Print, Network Scan, Fax (standard)',
+      'Max Original Size: 8.5" × 14"', 'Max Output Size: 8.5" × 14"',
+      'Document Feeder: 70-sheet ADF with single-pass duplex scanning at up to 60 ipm',
+      'Duplexing: Standard automatic duplex print, scan, and copy',
+      'Finishing Options: Not available',
+    ],
+    notes: 'Max paper size is 8.5×14" (legal). 11×17 tabloid is not supported. No finishing options available on this model.'
+  },
+  'brother-mono-h': {
+    model: 'Brother MFC-L6915DW', series: 'Brother MFC-L6 Series — Enterprise Mono Laser All-in-One',
+    speed: '52', colorType: 'Monochrome', maxPaper: '8.5×14"',
+    reason: 'The MFC-L6915DW is Brother\'s highest-output desktop monochrome laser all-in-one. At 52 ppm with an 80-sheet ADF scanning at 104 ipm and advanced security features, it\'s built for high-demand enterprise environments that need maximum throughput and low cost per page.',
+    badges: ['Mono Laser', 'Enterprise Desktop', '52 ppm', 'Up to 8.5×14"'],
+    specPdfUrl: 'https://www.brother-usa.com/-/media/brother/product-catalog-media/documents/2025/02/28/13/21/mfc-l6915dw_2pgbrochure.pdf',
+    productUrl: 'https://www.brother-usa.com/products/mfcl6915dw',
+    fullSpecs: [
+      'Type: Enterprise monochrome laser multi-function printer',
+      'Print/Copy Speed: 52 ppm (monochrome, 8.5×11")',
+      'Functions: Copy, Print, Network Print, Network Scan, Fax (standard)',
+      'Max Original Size: 8.5" × 14"', 'Max Output Size: 8.5" × 14"',
+      'Document Feeder: 80-sheet ADF with duplex scanning at up to 104 ipm',
+      'Duplexing: Standard automatic duplex print and scan',
+      'Finishing Options: Not available',
+    ],
+    notes: 'Max paper size is 8.5×14" (legal). 11×17 tabloid is not supported. No finishing options available on this model.'
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────
+//  MODEL LOOKUP TABLE
+// ─────────────────────────────────────────────────────────────────────
+const MODEL_LOOKUP = [
+  { match: ['mx-2640','mx2640','mx-2651','mx2651'], speed: 26 },
+  { match: ['mx-3050','mx3050','mx-3051','mx3051','mx-3061','mx3061','mx-3071','mx3071'], speed: 30 },
+  { match: ['mx-3550','mx3550','mx-3551','mx3551','mx-3561','mx3561','mx-3571','mx3571',
+            'mx-m350','mxm350','mx-m354','mxm354','mx-m3550','mxm3550','mx-m3551','mxm3551',
+            'mx-m365','mxm365','mx-m365n','mxm365n'], speed: 35 },
+  { match: ['mx-4050','mx4050','mx-4051','mx4051','mx-4061','mx4061','mx-4070','mx4070','mx-4071','mx4071',
+            'mx-3140','mx3140','mx-3141','mx3141','mx-m450','mxm450','mx-m453','mxm453',
+            'mx-m4070','mxm4070','mx-m4071','mxm4071','mx-m3140','mxm3140','mx-m3141','mxm3141',
+            'mx-m465','mxm465','mx-m465n','mxm465n'], speed: 40 },
+  { match: ['mx-5050','mx5050','mx-5051','mx5051','mx-5061','mx5061','mx-5070','mx5070','mx-5071','mx5071',
+            'mx-3640','mx3640','mx-3641','mx3641','mx-m550','mxm550','mx-m564','mxm564',
+            'mx-m5070','mxm5070','mx-m5071','mxm5071','mx-m3640','mxm3640','mx-m3641','mxm3641',
+            'mx-m565','mxm565','mx-m565n','mxm565n'], speed: 50 },
+  { match: ['mx-6050','mx6050','mx-6051','mx6051','mx-6061','mx6061','mx-6070','mx6070','mx-6071','mx6071',
+            'mx-m620','mxm620','mx-m623','mxm623','mx-m654','mxm654','mx-m753','mxm753',
+            'mx-m6070','mxm6070','mx-m6071','mxm6071','mx-m620n','mxm620n','mx-m623n','mxm623n'], speed: 60 },
+  { match: ['mx-m6570','mxm6570'], speed: 65 },
+  { match: ['mx-m7570','mxm7570'], speed: 75 },
+  { match: ['bp-70c36','bp70c36','bp-70m36','bp70m36'], speed: 36 },
+  { match: ['bp-70c45','bp70c45','bp-70m45','bp70m45','bp-71c45','bp71c45'], speed: 45 },
+  { match: ['bp-70c55','bp70c55','bp-70m55','bp70m55','bp-71c55','bp71c55'], speed: 55 },
+  { match: ['bp-70c65','bp70c65','bp-70m65','bp70m65','bp-71c65','bp71c65'], speed: 65 },
+  { match: ['bp-c535','bpc535'], speed: 35 },
+  { match: ['bp-c545','bpc545'], speed: 45 },
+  { match: ['bp-b540','bpb540'], speed: 40 },
+  { match: ['bp-b550','bpb550'], speed: 50 },
+  { match: ['workcentre 5325','workcentre5325','wc5325'], speed: 25 },
+  { match: ['workcentre 5330','workcentre5330','wc5330'], speed: 30 },
+  { match: ['workcentre 5335','workcentre5335','wc5335'], speed: 35 },
+  { match: ['workcentre 5945','workcentre5945','wc5945'], speed: 45 },
+  { match: ['workcentre 5955','workcentre5955','wc5955'], speed: 55 },
+  { match: ['workcentre 7830','workcentre7830','wc7830'], speed: 30 },
+  { match: ['workcentre 7835','workcentre7835','wc7835'], speed: 35 },
+  { match: ['workcentre 7845','workcentre7845','wc7845'], speed: 45 },
+  { match: ['workcentre 7855','workcentre7855','wc7855'], speed: 55 },
+  { match: ['altalink c8030','altalink c8035'], speed: 30 },
+  { match: ['altalink c8045'], speed: 45 },
+  { match: ['altalink c8055'], speed: 55 },
+  { match: ['altalink c8070'], speed: 70 },
+  { match: ['versalink c7020'], speed: 20 },
+  { match: ['versalink c7025'], speed: 25 },
+  { match: ['versalink c7030'], speed: 30 },
+  { match: ['mp c3003','mpc3003','mp-c3003'], speed: 30 },
+  { match: ['mp c3503','mpc3503','mp-c3503'], speed: 35 },
+  { match: ['mp c4503','mpc4503','mp-c4503'], speed: 45 },
+  { match: ['mp c5503','mpc5503','mp-c5503'], speed: 55 },
+  { match: ['mp c6003','mpc6003','mp-c6003'], speed: 60 },
+  { match: ['mp c3004','mpc3004'], speed: 30 },
+  { match: ['mp c3504','mpc3504'], speed: 35 },
+  { match: ['mp c4504','mpc4504'], speed: 45 },
+  { match: ['mp c5504','mpc5504'], speed: 55 },
+  { match: ['mp c6004','mpc6004'], speed: 60 },
+  { match: ['im c3000','imc3000'], speed: 30 },
+  { match: ['im c3500','imc3500'], speed: 35 },
+  { match: ['im c4500','imc4500'], speed: 45 },
+  { match: ['im c5500','imc5500'], speed: 55 },
+  { match: ['im c6000','imc6000'], speed: 60 },
+  { match: ['mp 3053','mp3053','mp-3053'], speed: 30 },
+  { match: ['mp 3554','mp3554','mp-3554'], speed: 35 },
+  { match: ['mp 4054','mp4054','mp-4054'], speed: 40 },
+  { match: ['mp 5054','mp5054','mp-5054'], speed: 50 },
+  { match: ['mp 6054','mp6054','mp-6054'], speed: 60 },
+  { match: ['bizhub c258','c258'], speed: 25 },
+  { match: ['bizhub c308','c308'], speed: 30 },
+  { match: ['bizhub c368','c368'], speed: 36 },
+  { match: ['bizhub c458','c458'], speed: 45 },
+  { match: ['bizhub c558','c558'], speed: 55 },
+  { match: ['bizhub c658','c658'], speed: 65 },
+  { match: ['bizhub 308','bizhub308'], speed: 30 },
+  { match: ['bizhub 368','bizhub368'], speed: 36 },
+  { match: ['bizhub 458','bizhub458'], speed: 45 },
+  { match: ['bizhub 558','bizhub558'], speed: 55 },
+  { match: ['bizhub 658','bizhub658'], speed: 65 },
+  { match: ['bizhub c3320','c3320'], speed: 33 },
+  { match: ['bizhub c4050','c4050'], speed: 40 },
+  { match: ['bizhub c4065','c4065'], speed: 40 },
+  { match: ['imagerunner 3325','ir3325','ir-3325'], speed: 25 },
+  { match: ['imagerunner 3330','ir3330','ir-3330'], speed: 30 },
+  { match: ['imagerunner 3335','ir3335','ir-3335'], speed: 35 },
+  { match: ['imagerunner 3345','ir3345','ir-3345'], speed: 45 },
+  { match: ['imagerunner advance c3320','irac3320'], speed: 20 },
+  { match: ['imagerunner advance c3325','irac3325'], speed: 25 },
+  { match: ['imagerunner advance c3330','irac3330'], speed: 30 },
+  { match: ['imagerunner advance c3520','irac3520'], speed: 20 },
+  { match: ['imagerunner advance c3525','irac3525'], speed: 25 },
+  { match: ['imagerunner advance c3530','irac3530'], speed: 30 },
+  { match: ['imagerunner advance c5535','irac5535'], speed: 35 },
+  { match: ['imagerunner advance c5540','irac5540'], speed: 40 },
+  { match: ['imagerunner advance c5550','irac5550'], speed: 50 },
+  { match: ['imagerunner advance c5560','irac5560'], speed: 60 },
+  { match: ['imagerunner advance c356','irac356'], speed: 35 },
+  { match: ['imagerunner advance c456','irac456'], speed: 45 },
+  { match: ['taskalfa 3253ci','3253ci'], speed: 32 },
+  { match: ['taskalfa 3554ci','3554ci'], speed: 35 },
+  { match: ['taskalfa 4054ci','4054ci'], speed: 40 },
+  { match: ['taskalfa 5054ci','5054ci'], speed: 50 },
+  { match: ['taskalfa 6054ci','6054ci'], speed: 60 },
+  { match: ['taskalfa 3252ci','3252ci'], speed: 32 },
+  { match: ['taskalfa 4052ci','4052ci'], speed: 40 },
+  { match: ['taskalfa 5052ci','5052ci'], speed: 50 },
+  { match: ['taskalfa 6052ci','6052ci'], speed: 60 },
+  { match: ['taskalfa 3212i','3212i'], speed: 32 },
+  { match: ['taskalfa 4012i','4012i'], speed: 40 },
+  { match: ['taskalfa 5012i','5012i'], speed: 50 },
+  { match: ['taskalfa 6012i','6012i'], speed: 60 },
+  // BROTHER
+  { match: ['mfc-l3780','mfcl3780','l3780cdw','3780cdw'], speed: 31 },
+  { match: ['mfc-l2820','mfcl2820','l2820dw','2820dw'], speed: 34 },
+  { match: ['mfc-l2980','mfcl2980','l2980dw','2980dw'], speed: 36 },
+  { match: ['mfc-l8970','mfcl8970','l8970cdw','8970cdw'], speed: 33 },
+  { match: ['mfc-l5915','mfcl5915','l5915dw','5915dw'], speed: 50 },
+  { match: ['mfc-l6915','mfcl6915','l6915dw','6915dw'], speed: 52 },
+  { match: ['mfc-l9670','mfcl9670','l9670cdw','9670cdw'], speed: 42 },
+];
+
+function lookupModelSpeed(modelStr) {
+  if (!modelStr) return null;
+  const normalized = modelStr.toLowerCase().replace(/\s+/g, ' ').trim();
+  for (const entry of MODEL_LOOKUP) {
+    for (const fragment of entry.match) {
+      if (normalized.includes(fragment)) return entry.speed;
+    }
+  }
+  return null;
+}
+
+function bumpedKey(currentSpeed, isColor) {
+  let tier;
+  if (currentSpeed <= 30)      tier = 'mid';
+  else if (currentSpeed <= 40) tier = 'mid-45';
+  else if (currentSpeed <= 50) tier = 'high';
+  else                         tier = 'high-65';
+  return isColor ? `color-${tier}` : `mono-${tier}`;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+//  RECOMMENDATION LOGIC
+// ─────────────────────────────────────────────────────────────────────
+function getRecommendation(colorPref, paperSize, volume, needsSaddle, replacing, curMachine) {
+  const forceFullSize = needsSaddle || paperSize === 'tabloid';
+  const isColor = colorPref === 'color';
+  const suggestColor = !isColor;
+
+  if (replacing === 'yes' && curMachine) {
+    const currentSpeed = lookupModelSpeed(curMachine);
+    if (currentSpeed !== null) {
+      const key = bumpedKey(currentSpeed, isColor);
+      return { key, suggestColor, speedBumped: true, detectedSpeed: currentSpeed };
+    }
+  }
+
+  if (!forceFullSize && volume === 'under2k') {
+    return { key: isColor ? 'color-small-535' : 'mono-small-540', suggestColor, speedBumped: false };
+  }
+  if (volume === 'under2k' || volume === '2k-5k') {
+    return { key: isColor ? 'color-mid' : 'mono-mid', suggestColor, speedBumped: false };
+  }
+  if (volume === '5k-10k') {
+    return { key: isColor ? 'color-mid-45' : 'mono-mid-45', suggestColor, speedBumped: false };
+  }
+  if (volume === 'over10k') {
+    return { key: isColor ? 'color-high' : 'mono-high', suggestColor, speedBumped: false };
+  }
+  return { key: isColor ? 'color-mid' : 'mono-mid', suggestColor, speedBumped: false };
+}
+
+// ─────────────────────────────────────────────────────────────────────
+//  BROTHER RECOMMENDATION LOGIC
+// ─────────────────────────────────────────────────────────────────────
+function getBrotherRecommendation(colorPref, volume) {
+  const isColor = colorPref === 'color';
+  if (isColor) {
+    if (volume === 'br-under500' || volume === 'br-500-750') return 'brother-color-xs'; // L3780CDW
+    if (volume === 'br-750-1000') return 'brother-color-s'; // L8970CDW
+    return 'brother-color-m'; // L9670CDW
+  } else {
+    if (volume === 'br-under500')  return 'brother-mono-xs'; // L2820DW (light ≤500)
+    if (volume === 'br-500-750')   return 'brother-mono-m';  // L5915DW (L2820/L2980 too small for 500+)
+    if (volume === 'br-750-1000')  return 'brother-mono-m';  // L5915DW
+    return 'brother-mono-h'; // L6915DW
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+//  WIZARD STATE
+// ─────────────────────────────────────────────────────────────────────
+let currentStep = 0;
+const TOTAL_STEPS = 4;
+let activePath = null; // 'sharp' | 'brother'
+
+const NAV_CONFIG = {
+  sharp:   { labels: ['Your Needs','Print Volume','Features','Your Info'],
+             subs:   ['Color, size & current machine','Monthly page estimate','Finishing & add-ons','Contact details'] },
+  brother: { labels: ['Color Preference','Print Volume','Your Info',null],
+             subs:   ['Color or monochrome','Monthly page estimate','Contact details',null] },
+};
+
+function updateSidebarForPath(path, activeIndex) {
+  const cfg = NAV_CONFIG[path];
+  for (let i = 0; i < 4; i++) {
+    const item = document.getElementById('snav-' + i);
+    if (cfg.labels[i] === null) {
+      item.style.visibility = 'hidden';
+    } else {
+      item.style.visibility = '';
+      item.querySelector('.snav-label').textContent = cfg.labels[i];
+      item.querySelector('.snav-sub').textContent   = cfg.subs[i];
+    }
+    item.classList.remove('active','done');
+    if (i < activeIndex)  item.classList.add('done');
+    if (i === activeIndex) item.classList.add('active');
+  }
+}
+
+function resetSidebar() {
+  for (let i = 0; i < 4; i++) {
+    const item = document.getElementById('snav-' + i);
+    item.style.visibility = '';
+    item.classList.remove('active','done');
+  }
+  document.getElementById('sidebar-headline').innerHTML = 'Find the Right<br>Machine';
+  document.getElementById('sidebar-sub').textContent = 'Tell us what type of equipment you need and we\'ll point you in the right direction.';
+}
+
+function updateProgress(step) {
+  for (let i = 0; i < TOTAL_STEPS; i++) {
+    const nav = document.getElementById('snav-' + i);
+    nav.classList.remove('active', 'done');
+    if (i < step)   nav.classList.add('done');
+    if (i === step) nav.classList.add('active');
+  }
+}
+
+function showCard(id) {
+  document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('content-pane').scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showStep(step) {
+  document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
+  document.getElementById('step-' + step).classList.add('active');
+  updateSidebarForPath('sharp', step);
+  document.getElementById('content-pane').scrollTo({ top: 0, behavior: 'smooth' });
+  currentStep = step;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+//  VALIDATION
+// ─────────────────────────────────────────────────────────────────────
+function validate(step) {
+  let ok = true;
+  if (step === 0) {
+    const color = document.querySelector('input[name="color_pref"]:checked');
+    const paper = document.querySelector('input[name="paper_size"]:checked');
+    const rep   = document.querySelector('input[name="replacing"]:checked');
+    setError('err-color', !color); setError('err-paper', !paper); setError('err-replace', !rep);
+    if (!color || !paper || !rep) ok = false;
+  }
+  if (step === 1) {
+    const vol = document.querySelector('input[name="volume"]:checked');
+    setError('err-volume', !vol);
+    if (!vol) ok = false;
+  }
+  if (step === 3) {
+    const name  = document.getElementById('c-name').value.trim();
+    const email = document.getElementById('c-email').value.trim();
+    setError('err-name', !name); setError('err-email', !email || !email.includes('@'));
+    setFieldError('c-name', !name); setFieldError('c-email', !email || !email.includes('@'));
+    if (!name || !email || !email.includes('@')) ok = false;
+  }
+  return ok;
+}
+
+function setError(id, show) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('show', show);
+}
+function setFieldError(id, show) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('error', show);
+}
+
+// ─────────────────────────────────────────────────────────────────────
+//  NAVIGATION
+// ─────────────────────────────────────────────────────────────────────
+function goFromCategory() {
+  const catVal = document.querySelector('input[name="machine_type"]:checked')?.value;
+  if (!catVal) { setError('err-machine-type', true); return; }
+  setError('err-machine-type', false);
+  activePath = catVal;
+  if (catVal === 'sharp') {
+    document.getElementById('sidebar-headline').innerHTML = 'Find the Right<br>Copier or Printer';
+    document.getElementById('sidebar-sub').textContent = 'Answer 4 quick questions and we\'ll match you with the perfect Sharp MFP.';
+    showStep(0);
+  } else {
+    document.getElementById('sidebar-headline').innerHTML = 'Find the Right<br>Desktop Printer';
+    document.getElementById('sidebar-sub').textContent = 'Answer 3 quick questions and we\'ll match you with the right Brother workhorse.';
+    showCard('step-b0');
+    updateSidebarForPath('brother', 0);
+  }
+}
+
+function nextStep(from) {
+  if (!validate(from)) return;
+  if (from < TOTAL_STEPS - 1) showStep(from + 1);
+}
+function prevStep(from) {
+  if (from > 0) { showStep(from - 1); }
+  else { showCard('step-cat'); resetSidebar(); activePath = null; }
+}
+
+// Brother navigation
+function nextBrotherStep(from) {
+  if (!validateBrother(from)) return;
+  const steps = ['step-b0','step-b1','step-b2'];
+  if (from < steps.length - 1) {
+    showCard(steps[from + 1]);
+    updateSidebarForPath('brother', from + 1);
+  }
+}
+function prevBrotherStep(from) {
+  const steps = ['step-b0','step-b1','step-b2'];
+  if (from > 0) { showCard(steps[from - 1]); updateSidebarForPath('brother', from - 1); }
+  else { showCard('step-cat'); resetSidebar(); activePath = null; }
+}
+
+function validateBrother(step) {
+  let ok = true;
+  if (step === 0) {
+    const color = document.querySelector('input[name="b_color_pref"]:checked');
+    const rep   = document.querySelector('input[name="b_replacing"]:checked');
+    setError('b-err-color', !color); setError('b-err-replace', !rep);
+    if (!color || !rep) ok = false;
+  }
+  if (step === 1) {
+    const vol = document.querySelector('input[name="b_volume"]:checked');
+    setError('b-err-volume', !vol);
+    if (!vol) ok = false;
+  }
+  if (step === 2) {
+    const name  = document.getElementById('b-name').value.trim();
+    const email = document.getElementById('b-email').value.trim();
+    setError('b-err-name', !name); setError('b-err-email', !email || !email.includes('@'));
+    setFieldError('b-name', !name); setFieldError('b-email', !email || !email.includes('@'));
+    if (!name || !email || !email.includes('@')) ok = false;
+  }
+  return ok;
+}
+
+document.querySelectorAll('input[name="replacing"]').forEach(r => {
+  r.addEventListener('change', () => {
+    const show = document.querySelector('input[name="replacing"]:checked')?.value === 'yes';
+    document.getElementById('replace-field').style.display = show ? 'block' : 'none';
+  });
+});
+document.querySelectorAll('input[name="b_replacing"]').forEach(r => {
+  r.addEventListener('change', () => {
+    const show = document.querySelector('input[name="b_replacing"]:checked')?.value === 'yes';
+    document.getElementById('b-replace-field').style.display = show ? 'block' : 'none';
+  });
+});
+
+function syncCheckStyle(el) {
+  el.closest('.ck-item').classList.toggle('checked', el.checked);
+}
+
+// ─────────────────────────────────────────────────────────────────────
+//  FORM DATA
+// ─────────────────────────────────────────────────────────────────────
+function collectFormData() {
+  return {
+    colorPref:  document.querySelector('input[name="color_pref"]:checked')?.value || '',
+    paperSize:  document.querySelector('input[name="paper_size"]:checked')?.value || '',
+    volume:     document.querySelector('input[name="volume"]:checked')?.value || '',
+    replacing:  document.querySelector('input[name="replacing"]:checked')?.value || '',
+    curMachine: document.getElementById('current-machine').value.trim(),
+    fax:        document.getElementById('chk-fax').checked,
+    holePunch:  document.getElementById('chk-holepunch').checked,
+    hiCap:      document.getElementById('chk-hicap').checked,
+    staple:     document.getElementById('chk-staple').checked,
+    saddle:     document.getElementById('chk-saddle').checked,
+    name:       document.getElementById('c-name').value.trim(),
+    business:   document.getElementById('c-business').value.trim(),
+    email:      document.getElementById('c-email').value.trim(),
+    phone:      document.getElementById('c-phone').value.trim(),
+    notes:      document.getElementById('c-notes').value.trim(),
+  };
+}
+
+function collectBrotherFormData() {
+  return {
+    colorPref:  document.querySelector('input[name="b_color_pref"]:checked')?.value || '',
+    volume:     document.querySelector('input[name="b_volume"]:checked')?.value || '',
+    replacing:  document.querySelector('input[name="b_replacing"]:checked')?.value || '',
+    curMachine: document.getElementById('b-current-machine').value.trim(),
+    name:       document.getElementById('b-name').value.trim(),
+    business:   document.getElementById('b-business').value.trim(),
+    email:      document.getElementById('b-email').value.trim(),
+    phone:      document.getElementById('b-phone').value.trim(),
+    notes:      document.getElementById('b-notes').value.trim(),
+  };
+}
+
+function brotherVolumeLabel(v) {
+  return {'br-under500':'Under 500 pages/month','br-500-750':'500–750 pages/month','br-750-1000':'750–1,000 pages/month','br-over1k':'Over 1,000 pages/month'}[v] || v;
+}
+
+function volumeLabel(v) {
+  return {'under2k':'Under 2,000 pages/month','2k-5k':'2,000–5,000 pages/month','5k-10k':'5,000–10,000 pages/month','over10k':'Over 10,000 pages/month'}[v] || v;
+}
+function paperLabel(p) { return p === 'tabloid' ? '11×17 (Tabloid)' : '8.5×11 (Letter)'; }
+function colorLabel(c) { return c === 'color' ? 'Color' : 'Black & White (Mono)'; }
+
+function buildFeatureList(d) {
+  const feats = [];
+  if (d.fax)       feats.push('Fax capability (add-on module)');
+  if (d.holePunch) feats.push('Hole punch');
+  if (d.hiCap)     feats.push('High capacity paper feeding');
+  if (d.staple)    feats.push('Staple finisher');
+  if (d.saddle)    feats.push('Saddle stitch / booklet finisher');
+  return feats.length ? feats.join(', ') : 'None selected';
+}
+
+// ─────────────────────────────────────────────────────────────────────
+//  SUBMIT
+// ─────────────────────────────────────────────────────────────────────
+function submitForm() {
+  if (!validate(3)) return;
+
+  const d = collectFormData();
+  const { key, suggestColor, speedBumped, detectedSpeed } = getRecommendation(
+    d.colorPref, d.paperSize, d.volume, d.saddle, d.replacing, d.curMachine
+  );
+  const rec = MODELS[key];
+
+  document.getElementById('submit-btn').disabled = true;
+  document.getElementById('spinner').classList.add('show');
+  document.getElementById('send-status').className = 'send-status';
+  document.getElementById('send-status').textContent = '';
+
+  const speedBumpRow = speedBumped
+    ? `<tr><td style="padding:0 0 20px 0;"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#EFF6FF;border:1px solid #BFDBFE;padding:14px 18px;font-family:Arial,sans-serif;font-size:13px;color:#1D4ED8;line-height:1.6;"><strong>Speed Upgrade Applied:</strong> Customer is replacing a ${detectedSpeed}ppm machine. Bumped to ${rec.speed}ppm. Confirm with customer.</td></tr></table></td></tr>`
+    : (d.replacing === 'yes' && d.curMachine
+      ? `<tr><td style="padding:0 0 20px 0;"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#F4F6FA;border:1px solid #D0D8E8;padding:14px 18px;font-family:Arial,sans-serif;font-size:13px;color:#555555;line-height:1.6;"><strong>Replacing:</strong> ${d.curMachine} — model not in lookup, recommendation based on volume.</td></tr></table></td></tr>`
+      : '');
+
+  const notesRow = rec.notes
+    ? `<tr><td style="padding:0 0 20px 0;"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="border-left:4px solid #2B5CE6;padding:12px 16px;background-color:#EEF3FF;font-family:Arial,sans-serif;font-size:13px;color:#1E293B;line-height:1.5;">${rec.notes}</td></tr></table></td></tr>`
+    : '';
+
+  const colorSuggestRow = suggestColor
+    ? `<tr><td style="padding:0 0 20px 0;"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#FFFBEB;border:1px solid #FDE68A;padding:14px 18px;font-family:Arial,sans-serif;font-size:13px;color:#92400E;line-height:1.6;"><strong>Color Note:</strong> Customer selected black and white. Consider discussing a color MFP — the price difference is often minimal and adds flexibility.</td></tr></table></td></tr>`
+    : '';
+
+  const specsRows = rec.fullSpecs.map(s =>
+    `<tr><td style="padding:7px 0;border-bottom:1px solid #F0F0F0;font-family:Arial,sans-serif;font-size:13px;color:#444444;line-height:1.4;">&rsaquo; ${s}</td></tr>`
+  ).join('');
+
+  const emailBody = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background-color:#F1F5F9;font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#F1F5F9">
+<tr><td align="center" style="padding:24px 16px;">
+<table width="600" cellpadding="0" cellspacing="0" border="0">
+<tr><td bgcolor="#0C1B3A" style="border-radius:8px 8px 0 0;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr><td style="padding:28px 32px 22px 32px;">
+<p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:11px;color:#7799cc;text-transform:uppercase;letter-spacing:1px;">Central Office Supply</p>
+<p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:22px;font-weight:bold;color:#ffffff;">Your Sharp MFP Recommendation</p>
+<p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#7799cc;">Prepared by Central Office Supply</p>
+</td></tr>
+<tr><td bgcolor="#2B5CE6" style="height:4px;font-size:0;line-height:0;">&nbsp;</td></tr>
+</table>
+</td></tr>
+<tr><td bgcolor="#ffffff" style="padding:32px;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr><td style="padding:0 0 24px 0;font-family:Arial,sans-serif;font-size:15px;color:#333333;line-height:1.6;">
+Hi ${d.name},<br><br>
+Thank you for using our Copier and Printer Finder. Based on your answers, here is our recommendation along with a full spec sheet straight from Sharp. A member of our team will follow up to confirm this is the right fit.
+</td></tr>
+${speedBumpRow}
+<tr><td style="padding:0 0 20px 0;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#0C1B3A" style="border-radius:8px;">
+<tr><td style="padding:24px 28px;">
+<p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:11px;color:#7799cc;text-transform:uppercase;letter-spacing:1px;">Recommended Model</p>
+<p style="margin:0 0 2px 0;font-family:Arial,sans-serif;font-size:26px;font-weight:bold;color:#ffffff;">${rec.model}</p>
+<p style="margin:0 0 12px 0;font-family:Arial,sans-serif;font-size:13px;color:#7799cc;">${rec.series}</p>
+<p style="margin:0;font-family:Arial,sans-serif;font-size:14px;color:#dddddd;line-height:1.6;">${rec.reason}</p>
+</td></tr>
+</table>
+</td></tr>
+<tr><td style="padding:0 0 20px 0;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td width="31%" style="border:1px solid #D0D8E8;padding:14px;text-align:center;background-color:#ffffff;">
+<p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:20px;font-weight:bold;color:#0C1B3A;">${rec.speed} ppm</p>
+<p style="margin:0;font-family:Arial,sans-serif;font-size:11px;color:#888888;text-transform:uppercase;">Print Speed</p>
+</td>
+<td width="3%"></td>
+<td width="31%" style="border:1px solid #D0D8E8;padding:14px;text-align:center;background-color:#ffffff;">
+<p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:20px;font-weight:bold;color:#0C1B3A;">${rec.colorType}</p>
+<p style="margin:0;font-family:Arial,sans-serif;font-size:11px;color:#888888;text-transform:uppercase;">Print Type</p>
+</td>
+<td width="3%"></td>
+<td width="31%" style="border:1px solid #D0D8E8;padding:14px;text-align:center;background-color:#ffffff;">
+<p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:16px;font-weight:bold;color:#0C1B3A;">${rec.maxPaper}</p>
+<p style="margin:0;font-family:Arial,sans-serif;font-size:11px;color:#888888;text-transform:uppercase;">Max Paper</p>
+</td>
+</tr>
+</table>
+</td></tr>
+<tr><td style="padding:0 0 6px 0;font-family:Arial,sans-serif;font-size:11px;font-weight:bold;color:#888888;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid #EBEBEB;">Notable Specifications</td></tr>
+<tr><td style="padding:0 0 20px 0;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">${specsRows}</table>
+</td></tr>
+${notesRow}
+<tr><td style="padding:0 0 24px 0;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#F4F6FA">
+<tr><td style="padding:18px 20px;border:1px solid #D0D8E8;">
+<p style="margin:0 0 12px 0;font-family:Arial,sans-serif;font-size:12px;font-weight:bold;color:#0C1B3A;text-transform:uppercase;letter-spacing:1px;">Official Sharp Resources</p>
+<table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:10px;">
+<tr><td bgcolor="#2B5CE6" style="padding:9px 20px;">
+<a href="${rec.specPdfUrl}" style="font-family:Arial,sans-serif;font-size:13px;font-weight:bold;color:#ffffff;text-decoration:none;">Download Full Spec Sheet (PDF)</a>
+</td></tr>
+</table>
+<p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#888888;">View product page: <a href="${rec.productUrl}" style="color:#2B5CE6;text-decoration:none;">Sharp Business USA</a></p>
+</td></tr>
+</table>
+</td></tr>
+${colorSuggestRow}
+<tr><td style="border-top:1px solid #EBEBEB;padding:0 0 20px 0;font-size:0;line-height:0;">&nbsp;</td></tr>
+<tr><td style="padding:0 0 6px 0;font-family:Arial,sans-serif;font-size:11px;font-weight:bold;color:#888888;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid #EBEBEB;">Your Submitted Information</td></tr>
+<tr><td style="padding:0 0 24px 0;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#F4F6FA">
+<tr><td style="padding:20px 24px;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#888888;width:42%;">Name</td><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#333333;font-weight:bold;">${d.name}</td></tr>
+<tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#888888;">Business</td><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#333333;font-weight:bold;">${d.business || 'Not provided'}</td></tr>
+<tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#888888;">Phone</td><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#333333;font-weight:bold;">${d.phone || 'Not provided'}</td></tr>
+<tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#888888;">Email</td><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#333333;font-weight:bold;">${d.email}</td></tr>
+<tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#888888;">Print Preference</td><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#333333;font-weight:bold;">${colorLabel(d.colorPref)}</td></tr>
+<tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#888888;">Paper Size</td><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#333333;font-weight:bold;">${paperLabel(d.paperSize)}</td></tr>
+<tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#888888;">Monthly Volume</td><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#333333;font-weight:bold;">${volumeLabel(d.volume)}</td></tr>
+<tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#888888;">Replacing</td><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#333333;font-weight:bold;">${d.replacing === 'yes' ? 'Yes - replacing: ' + (d.curMachine || 'not specified') : 'No'}</td></tr>
+<tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#888888;">Features</td><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#333333;font-weight:bold;">${buildFeatureList(d)}</td></tr>
+<tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#888888;">Notes</td><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#333333;font-weight:bold;">${d.notes || 'None'}</td></tr>
+</table>
+</td></tr>
+</table>
+</td></tr>
+<tr><td>
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #D0D8E8;border-left:4px solid #2B5CE6;">
+<tr><td style="padding:20px 24px;">
+<p style="margin:0 0 10px 0;font-family:Arial,sans-serif;font-size:13px;font-weight:bold;color:#0C1B3A;text-transform:uppercase;">What Happens Next</p>
+<p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#555555;line-height:1.7;">A member of our sales team will be in touch to confirm this recommendation. No obligation — we just want to make sure you get the right machine.<br><br>
+<strong>Questions now?</strong><br>
+<a href="tel:7856322177" style="color:#2B5CE6;text-decoration:none;">785-632-2177</a> &nbsp;|&nbsp;
+<a href="mailto:sales@centralofficesupply.com" style="color:#2B5CE6;text-decoration:none;">sales@centralofficesupply.com</a>
+</p>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</td></tr>
+<tr><td bgcolor="#F1F5F9" style="padding:20px 32px;text-align:center;">
+<p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:12px;font-weight:bold;color:#666666;">Central Office Supply</p>
+<p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:12px;color:#aaaaaa;"><a href="https://www.centralofficesupply.com" style="color:#2B5CE6;text-decoration:none;">centralofficesupply.com</a> &bull; 785-632-2177</p>
+<p style="margin:8px 0 0 0;font-family:Arial,sans-serif;font-size:11px;color:#bbbbbb;line-height:1.5;">Specs sourced from Sharp Business USA. Subject to change without notice.</p>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body></html>`;
+
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    to_email:      d.email,
+    to_name:       d.name,
+    bcc_email:     BCC_EMAIL,
+    customer_name: d.name,
+    rec_model:     rec.model,
+    subject:       `Your Sharp MFP Recommendation - ${rec.model}`,
+    message_html:  emailBody,
+  })
+  .then(() => {
+    document.getElementById('spinner').classList.remove('show');
+    showResultSection(d, rec, suggestColor, speedBumped, detectedSpeed, 'sharp');
+  })
+  .catch((err) => {
+    console.error('EmailJS error:', err);
+    document.getElementById('spinner').classList.remove('show');
+    document.getElementById('submit-btn').disabled = false;
+    const status = document.getElementById('send-status');
+    status.className = 'send-status error-s';
+    status.textContent = 'There was a problem sending your results. Please call us at 785-632-2177 or email sales@centralofficesupply.com.';
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────
+//  SUBMIT BROTHER FORM
+// ─────────────────────────────────────────────────────────────────────
+function submitBrotherForm() {
+  if (!validateBrother(2)) return;
+  const d = collectBrotherFormData();
+  const key = getBrotherRecommendation(d.colorPref, d.volume);
+  const rec = MODELS[key];
+
+  document.getElementById('b-submit-btn').disabled = true;
+  document.getElementById('b-spinner').classList.add('show');
+  document.getElementById('b-send-status').className = 'send-status';
+  document.getElementById('b-send-status').textContent = '';
+
+  const specsRows = rec.fullSpecs.map(s =>
+    `<tr><td style="padding:7px 0;border-bottom:1px solid #F0F0F0;font-family:Arial,sans-serif;font-size:13px;color:#444444;line-height:1.4;">&rsaquo; ${s}</td></tr>`
+  ).join('');
+
+  const replacingRow = d.replacing === 'yes'
+    ? `<tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#888888;">Replacing</td><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#333333;font-weight:bold;">Yes — ${d.curMachine || 'not specified'}</td></tr>`
+    : `<tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#888888;">Replacing</td><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#333333;font-weight:bold;">No</td></tr>`;
+
+  const emailBody = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background-color:#F1F5F9;font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#F1F5F9">
+<tr><td align="center" style="padding:24px 16px;">
+<table width="600" cellpadding="0" cellspacing="0" border="0">
+<tr><td bgcolor="#004B87" style="border-radius:8px 8px 0 0;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr><td style="padding:28px 32px 22px 32px;">
+<p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:11px;color:#7ab2d4;text-transform:uppercase;letter-spacing:1px;">Central Office Supply</p>
+<p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:22px;font-weight:bold;color:#ffffff;">Your Brother Workhorse Recommendation</p>
+<p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#7ab2d4;">Prepared by Central Office Supply</p>
+</td></tr>
+<tr><td bgcolor="#003a6b" style="height:4px;font-size:0;line-height:0;">&nbsp;</td></tr>
+</table>
+</td></tr>
+<tr><td bgcolor="#ffffff" style="padding:32px;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr><td style="padding:0 0 24px 0;font-family:Arial,sans-serif;font-size:15px;color:#333333;line-height:1.6;">
+Hi ${d.name},<br><br>
+Thank you for using our Printer Finder. Based on your answers, here is our recommended Brother desktop workhorse. A member of our team will follow up to confirm this is the right fit.
+</td></tr>
+<tr><td style="padding:0 0 20px 0;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#004B87" style="border-radius:8px;">
+<tr><td style="padding:24px 28px;">
+<p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:11px;color:#7ab2d4;text-transform:uppercase;letter-spacing:1px;">Recommended Model</p>
+<p style="margin:0 0 2px 0;font-family:Arial,sans-serif;font-size:26px;font-weight:bold;color:#ffffff;">${rec.model}</p>
+<p style="margin:0 0 12px 0;font-family:Arial,sans-serif;font-size:13px;color:#7ab2d4;">${rec.series}</p>
+<p style="margin:0;font-family:Arial,sans-serif;font-size:14px;color:#dddddd;line-height:1.6;">${rec.reason}</p>
+</td></tr>
+</table>
+</td></tr>
+<tr><td style="padding:0 0 20px 0;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td width="31%" style="border:1px solid #D0D8E8;padding:14px;text-align:center;background-color:#ffffff;">
+<p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:20px;font-weight:bold;color:#004B87;">${rec.speed} ppm</p>
+<p style="margin:0;font-family:Arial,sans-serif;font-size:11px;color:#888888;text-transform:uppercase;">Print Speed</p>
+</td>
+<td width="3%"></td>
+<td width="31%" style="border:1px solid #D0D8E8;padding:14px;text-align:center;background-color:#ffffff;">
+<p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:20px;font-weight:bold;color:#004B87;">${rec.colorType}</p>
+<p style="margin:0;font-family:Arial,sans-serif;font-size:11px;color:#888888;text-transform:uppercase;">Print Type</p>
+</td>
+<td width="3%"></td>
+<td width="31%" style="border:1px solid #D0D8E8;padding:14px;text-align:center;background-color:#ffffff;">
+<p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:16px;font-weight:bold;color:#004B87;">${rec.maxPaper}</p>
+<p style="margin:0;font-family:Arial,sans-serif;font-size:11px;color:#888888;text-transform:uppercase;">Max Paper</p>
+</td>
+</tr>
+</table>
+</td></tr>
+<tr><td style="padding:0 0 6px 0;font-family:Arial,sans-serif;font-size:11px;font-weight:bold;color:#888888;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid #EBEBEB;">Notable Specifications</td></tr>
+<tr><td style="padding:0 0 20px 0;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">${specsRows}</table>
+</td></tr>
+<tr><td style="padding:0 0 24px 0;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#F4F6FA">
+<tr><td style="padding:18px 20px;border:1px solid #D0D8E8;">
+<p style="margin:0 0 12px 0;font-family:Arial,sans-serif;font-size:12px;font-weight:bold;color:#004B87;text-transform:uppercase;letter-spacing:1px;">Official Brother Resources</p>
+<table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:10px;">
+<tr><td bgcolor="#004B87" style="padding:9px 20px;">
+<a href="${rec.specPdfUrl}" style="font-family:Arial,sans-serif;font-size:13px;font-weight:bold;color:#ffffff;text-decoration:none;">Download Spec Sheet / Brochure (PDF)</a>
+</td></tr>
+</table>
+<p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#888888;">View product page: <a href="${rec.productUrl}" style="color:#004B87;text-decoration:none;">Brother USA</a></p>
+</td></tr>
+</table>
+</td></tr>
+<tr><td style="border-top:1px solid #EBEBEB;padding:0 0 20px 0;font-size:0;line-height:0;">&nbsp;</td></tr>
+<tr><td style="padding:0 0 6px 0;font-family:Arial,sans-serif;font-size:11px;font-weight:bold;color:#888888;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid #EBEBEB;">Your Submitted Information</td></tr>
+<tr><td style="padding:0 0 24px 0;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#F4F6FA">
+<tr><td style="padding:20px 24px;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#888888;width:42%;">Name</td><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#333333;font-weight:bold;">${d.name}</td></tr>
+<tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#888888;">Business</td><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#333333;font-weight:bold;">${d.business || 'Not provided'}</td></tr>
+<tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#888888;">Phone</td><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#333333;font-weight:bold;">${d.phone || 'Not provided'}</td></tr>
+<tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#888888;">Email</td><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#333333;font-weight:bold;">${d.email}</td></tr>
+<tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#888888;">Print Preference</td><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#333333;font-weight:bold;">${colorLabel(d.colorPref)}</td></tr>
+<tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#888888;">Monthly Volume</td><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#333333;font-weight:bold;">${brotherVolumeLabel(d.volume)}</td></tr>
+${replacingRow}
+<tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#888888;">Notes</td><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#333333;font-weight:bold;">${d.notes || 'None'}</td></tr>
+</table>
+</td></tr>
+</table>
+</td></tr>
+<tr><td>
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #D0D8E8;border-left:4px solid #004B87;">
+<tr><td style="padding:20px 24px;">
+<p style="margin:0 0 10px 0;font-family:Arial,sans-serif;font-size:13px;font-weight:bold;color:#004B87;text-transform:uppercase;">What Happens Next</p>
+<p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#555555;line-height:1.7;">A member of our sales team will be in touch to confirm this recommendation. No obligation — we just want to make sure you get the right machine.<br><br>
+<strong>Questions now?</strong><br>
+<a href="tel:7856322177" style="color:#004B87;text-decoration:none;">785-632-2177</a> &nbsp;|&nbsp;
+<a href="mailto:sales@centralofficesupply.com" style="color:#004B87;text-decoration:none;">sales@centralofficesupply.com</a>
+</p>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</td></tr>
+<tr><td bgcolor="#F1F5F9" style="padding:20px 32px;text-align:center;">
+<p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:12px;font-weight:bold;color:#666666;">Central Office Supply</p>
+<p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:12px;color:#aaaaaa;"><a href="https://www.centralofficesupply.com" style="color:#004B87;text-decoration:none;">centralofficesupply.com</a> &bull; 785-632-2177</p>
+<p style="margin:8px 0 0 0;font-family:Arial,sans-serif;font-size:11px;color:#bbbbbb;line-height:1.5;">Specs sourced from Brother USA. Subject to change without notice.</p>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body></html>`;
+
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    to_email:      d.email,
+    to_name:       d.name,
+    bcc_email:     BCC_EMAIL,
+    customer_name: d.name,
+    rec_model:     rec.model,
+    subject:       `Your Brother Workhorse Recommendation — ${rec.model}`,
+    message_html:  emailBody,
+  })
+  .then(() => {
+    document.getElementById('b-spinner').classList.remove('show');
+    showResultSection(d, rec, false, false, null, 'brother');
+  })
+  .catch((err) => {
+    console.error('EmailJS error:', err);
+    document.getElementById('b-spinner').classList.remove('show');
+    document.getElementById('b-submit-btn').disabled = false;
+    const status = document.getElementById('b-send-status');
+    status.className = 'send-status error-s';
+    status.textContent = 'There was a problem sending your results. Please call us at 785-632-2177 or email sales@centralofficesupply.com.';
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────
+//  SHOW RESULTS
+// ─────────────────────────────────────────────────────────────────────
+function showResultSection(d, rec, suggestColor, speedBumped, detectedSpeed, path) {
+  path = path || 'sharp';
+  document.getElementById('form-area').style.display = 'none';
+  document.getElementById('result-section').style.display = 'block';
+  document.getElementById('content-pane').scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Sidebar: all done
+  for (let i = 0; i < 4; i++) {
+    const nav = document.getElementById('snav-' + i);
+    nav.style.visibility = (path === 'brother' && i === 3) ? 'hidden' : '';
+    nav.classList.remove('active');
+    if (nav.style.visibility !== 'hidden') nav.classList.add('done');
+  }
+
+  // Hero color + eyebrow
+  const hero = document.getElementById('rec-hero');
+  if (path === 'brother') {
+    hero.classList.add('brother-hero');
+    document.getElementById('rec-eyebrow').textContent = 'Your Brother Workhorse Recommendation';
+  } else {
+    hero.classList.remove('brother-hero');
+    document.getElementById('rec-eyebrow').textContent = 'Your Sharp MFP Recommendation';
+  }
+
+  document.getElementById('rec-model-name').textContent  = rec.model;
+  document.getElementById('rec-series-name').textContent = rec.series;
+  document.getElementById('rec-reason').textContent      = rec.reason;
+  document.getElementById('spec-speed').textContent      = rec.speed;
+  document.getElementById('spec-color').textContent      = rec.colorType;
+  document.getElementById('spec-paper').textContent      = rec.maxPaper;
+
+  const badgeRow = document.getElementById('rec-badges');
+  badgeRow.innerHTML = '';
+  rec.badges.forEach(b => {
+    const span = document.createElement('span');
+    span.className = 'rec-badge';
+    span.textContent = b;
+    badgeRow.appendChild(span);
+  });
+
+  document.getElementById('color-suggest-note').style.display = (suggestColor && path === 'sharp') ? 'block' : 'none';
+
+  const bumpNote = document.getElementById('speed-bump-note');
+  if (speedBumped && detectedSpeed && path === 'sharp') {
+    bumpNote.style.display = 'block';
+    bumpNote.innerHTML = `<strong>⬆ Speed Upgrade:</strong> Based on your current ${detectedSpeed}ppm machine, we've recommended a faster ${rec.speed}ppm model — a smart step up that gives you more headroom as your print needs grow.`;
+  } else {
+    bumpNote.style.display = 'none';
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+//  RESTART
+// ─────────────────────────────────────────────────────────────────────
+function restartTool() {
+  document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+  document.querySelectorAll('input[type="checkbox"]').forEach(c => {
+    c.checked = false;
+    c.closest('.ck-item')?.classList.remove('checked');
+  });
+  document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], textarea')
+    .forEach(i => i.value = '');
+  document.getElementById('replace-field').style.display = 'none';
+  document.getElementById('b-replace-field').style.display = 'none';
+  document.getElementById('submit-btn').disabled = false;
+  document.getElementById('b-submit-btn').disabled = false;
+  document.getElementById('result-section').style.display = 'none';
+  document.getElementById('form-area').style.display = '';
+  activePath = null;
+  resetSidebar();
+  showCard('step-cat');
+}
+</script>
+
+</body>
+</html>
