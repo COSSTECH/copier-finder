@@ -6,6 +6,7 @@
 <title>Copier & Printer Finder | Central Office Supply</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
 
 :root {
@@ -37,8 +38,9 @@ body {
   font-family: 'DM Sans', sans-serif;
   background: var(--bg);
   color: var(--text);
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.5;
+  font-optical-sizing: auto;
 }
 
 /* ── SPLIT SHELL ── */
@@ -172,7 +174,7 @@ body {
 .snav-text { padding-top: 3px; }
 .snav-label {
   font-family: 'Syne', sans-serif;
-  font-size: 0.84rem;
+  font-size: 0.88rem;
   font-weight: 600;
   color: rgba(255,255,255,0.28);
   transition: color 0.25s;
@@ -181,7 +183,7 @@ body {
 .snav-item.active .snav-label { color: rgba(255,255,255,0.92); }
 .snav-item.done  .snav-label  { color: rgba(255,255,255,0.48); }
 .snav-sub {
-  font-size: 0.73rem;
+  font-size: 0.77rem;
   color: rgba(255,255,255,0.18);
   margin-top: 1px;
   transition: color 0.25s;
@@ -246,18 +248,19 @@ body {
 }
 .step-title {
   font-family: 'Syne', sans-serif;
-  font-size: 2.4rem;
+  font-size: 2.5rem;
   font-weight: 800;
   color: var(--navy);
   line-height: 1.1;
   margin-bottom: 10px;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
 }
 .step-desc {
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: var(--text-light);
   margin-bottom: 40px;
   line-height: 1.65;
+  max-width: 560px;
 }
 
 /* ── FIELD GROUPS ── */
@@ -267,7 +270,7 @@ body {
 .field-label {
   display: block;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: var(--text);
   margin-bottom: 4px;
   letter-spacing: -0.01em;
@@ -324,11 +327,11 @@ body {
 .rc-body { flex: 1; }
 .rc-main {
   font-weight: 600;
-  font-size: 0.88rem;
+  font-size: 0.93rem;
   color: var(--text);
 }
 .rc-sub {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--text-light);
   margin-top: 1px;
 }
@@ -707,6 +710,9 @@ input.error { border-color: #DC2626; }
 }
 .restart-btn:hover { color: var(--navy); }
 
+/* ── CLOUDFLARE TURNSTILE ── */
+.cf-turnstile { margin: 8px 0 4px; }
+
 /* ── BROTHER HERO OVERRIDE ── */
 .rec-hero.brother-hero {
   background: linear-gradient(140deg, #003a6b 0%, #004B87 60%, #005fa0 100%);
@@ -742,7 +748,7 @@ input.error { border-color: #DC2626; }
   font-weight: 700;
   color: var(--navy);
 }
-.cat-sub { font-size: 0.8rem; color: var(--text-light); line-height: 1.5; }
+.cat-sub { font-size: 0.85rem; color: var(--text-light); line-height: 1.5; }
 .cat-radio {
   width: 20px; height: 20px;
   border-radius: 50%;
@@ -1114,6 +1120,9 @@ input.error { border-color: #DC2626; }
             maxlength="500" style="resize:vertical;"></textarea>
         </div>
 
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAADhX_3HTT8MljPfT" data-theme="light"></div>
+        <div class="err-msg" id="err-turnstile">Please complete the verification above.</div>
+
         <div class="btn-row">
           <button class="btn btn-ghost" onclick="prevStep(3)">← Back</button>
           <button class="btn btn-submit" id="submit-btn" onclick="submitForm()">Get My Recommendation →</button>
@@ -1269,6 +1278,9 @@ input.error { border-color: #DC2626; }
           <label class="field-label" for="b-notes">Anything else we should know?</label>
           <textarea id="b-notes" rows="3" placeholder="Special requirements, location, timeline, etc." maxlength="500" style="resize:vertical;"></textarea>
         </div>
+
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAADhX_3HTT8MljPfT" data-theme="light"></div>
+        <div class="err-msg" id="b-err-turnstile">Please complete the verification above.</div>
 
         <div class="btn-row">
           <button class="btn btn-ghost" onclick="prevBrotherStep(2)">← Back</button>
@@ -2131,6 +2143,9 @@ function buildFeatureList(d) {
 // ─────────────────────────────────────────────────────────────────────
 function submitForm() {
   if (!validate(3)) return;
+  const tsToken = document.querySelector('#step-3 [name="cf-turnstile-response"]')?.value;
+  setError('err-turnstile', !tsToken);
+  if (!tsToken) return;
 
   const d = collectFormData();
   const { key, suggestColor, speedBumped, detectedSpeed } = getRecommendation(
@@ -2306,6 +2321,10 @@ ${colorSuggestRow}
 // ─────────────────────────────────────────────────────────────────────
 function submitBrotherForm() {
   if (!validateBrother(2)) return;
+  const bTsToken = document.querySelector('#step-b2 [name="cf-turnstile-response"]')?.value;
+  setError('b-err-turnstile', !bTsToken);
+  if (!bTsToken) return;
+
   const d = collectBrotherFormData();
   const key = getBrotherRecommendation(d.colorPref, d.volume);
   const rec = MODELS[key];
@@ -2529,6 +2548,7 @@ function restartTool() {
   document.getElementById('b-submit-btn').disabled = false;
   document.getElementById('result-section').style.display = 'none';
   document.getElementById('form-area').style.display = '';
+  if (window.turnstile) turnstile.reset();
   activePath = null;
   resetSidebar();
   showCard('step-cat');
