@@ -1947,17 +1947,23 @@ function updateProgress(step) {
   }
 }
 
+function clearStepErrors(cardId) {
+  const card = document.getElementById(cardId);
+  if (!card) return;
+  card.querySelectorAll('.err-msg.show').forEach(e => e.classList.remove('show'));
+  card.querySelectorAll('.error').forEach(f => f.classList.remove('error'));
+}
+
 function showCard(id) {
+  clearStepErrors(id);
   document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   document.getElementById('content-pane').scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function showStep(step) {
-  document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
-  document.getElementById('step-' + step).classList.add('active');
+  showCard('step-' + step);
   updateSidebarForPath('sharp', step);
-  document.getElementById('content-pane').scrollTo({ top: 0, behavior: 'smooth' });
   currentStep = step;
 }
 
@@ -1981,9 +1987,10 @@ function validate(step) {
   if (step === 3) {
     const name  = document.getElementById('c-name').value.trim();
     const email = document.getElementById('c-email').value.trim();
-    setError('err-name', !name); setError('err-email', !email || !email.includes('@'));
-    setFieldError('c-name', !name); setFieldError('c-email', !email || !email.includes('@'));
-    if (!name || !email || !email.includes('@')) ok = false;
+    const emailOk = isValidEmail(email);
+    setError('err-name', !name); setError('err-email', !emailOk);
+    setFieldError('c-name', !name); setFieldError('c-email', !emailOk);
+    if (!name || !emailOk) ok = false;
   }
   return ok;
 }
@@ -1995,6 +2002,9 @@ function setError(id, show) {
 function setFieldError(id, show) {
   const el = document.getElementById(id);
   if (el) el.classList.toggle('error', show);
+}
+function isValidEmail(e) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 }
 
 // ─────────────────────────────────────────────────────────────────────
@@ -2057,9 +2067,10 @@ function validateBrother(step) {
   if (step === 2) {
     const name  = document.getElementById('b-name').value.trim();
     const email = document.getElementById('b-email').value.trim();
-    setError('b-err-name', !name); setError('b-err-email', !email || !email.includes('@'));
-    setFieldError('b-name', !name); setFieldError('b-email', !email || !email.includes('@'));
-    if (!name || !email || !email.includes('@')) ok = false;
+    const emailOk = isValidEmail(email);
+    setError('b-err-name', !name); setError('b-err-email', !emailOk);
+    setFieldError('b-name', !name); setFieldError('b-email', !emailOk);
+    if (!name || !emailOk) ok = false;
   }
   return ok;
 }
@@ -2546,9 +2557,22 @@ function restartTool() {
   document.getElementById('b-replace-field').style.display = 'none';
   document.getElementById('submit-btn').disabled = false;
   document.getElementById('b-submit-btn').disabled = false;
+  // Clear all visible error/status state
+  document.querySelectorAll('.err-msg.show').forEach(e => e.classList.remove('show'));
+  document.querySelectorAll('.error').forEach(f => f.classList.remove('error'));
+  document.getElementById('spinner').classList.remove('show');
+  document.getElementById('b-spinner').classList.remove('show');
+  const ss = document.getElementById('send-status');
+  ss.className = 'send-status'; ss.textContent = '';
+  const bss = document.getElementById('b-send-status');
+  bss.className = 'send-status'; bss.textContent = '';
   document.getElementById('result-section').style.display = 'none';
   document.getElementById('form-area').style.display = '';
-  if (window.turnstile) turnstile.reset();
+  if (window.turnstile) {
+    document.querySelectorAll('.cf-turnstile').forEach(el => {
+      try { turnstile.reset(el); } catch (e) { /* widget not rendered yet */ }
+    });
+  }
   activePath = null;
   resetSidebar();
   showCard('step-cat');
