@@ -552,6 +552,8 @@ input.error { border-color: #DC2626; }
 #result-section {
   display: none;
   padding: 60px 80px 60px 72px;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 .note-card {
@@ -601,7 +603,7 @@ input.error { border-color: #DC2626; }
 }
 .rec-model {
   font-family: 'Syne', sans-serif;
-  font-size: 3.2rem;
+  font-size: clamp(2.2rem, 4.5vw, 3.2rem);
   font-weight: 800;
   color: #fff;
   line-height: 1;
@@ -2170,9 +2172,9 @@ function submitForm() {
   document.getElementById('send-status').textContent = '';
 
   const speedBumpRow = speedBumped
-    ? `<tr><td style="padding:0 0 20px 0;"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#EFF6FF;border:1px solid #BFDBFE;padding:14px 18px;font-family:Arial,sans-serif;font-size:13px;color:#1D4ED8;line-height:1.6;"><strong>Speed Upgrade Applied:</strong> Customer is replacing a ${detectedSpeed}ppm machine. Bumped to ${rec.speed}ppm. Confirm with customer.</td></tr></table></td></tr>`
+    ? `<tr><td style="padding:0 0 20px 0;"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#EFF6FF;border:1px solid #BFDBFE;padding:14px 18px;font-family:Arial,sans-serif;font-size:13px;color:#1D4ED8;line-height:1.6;"><strong>Speed Upgrade:</strong> Based on your current ${detectedSpeed}ppm machine, we&rsquo;ve recommended a faster ${rec.speed}ppm model &mdash; a smart step up that gives you more headroom as your print needs grow.</td></tr></table></td></tr>`
     : (d.replacing === 'yes' && d.curMachine
-      ? `<tr><td style="padding:0 0 20px 0;"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#F4F6FA;border:1px solid #D0D8E8;padding:14px 18px;font-family:Arial,sans-serif;font-size:13px;color:#555555;line-height:1.6;"><strong>Replacing:</strong> ${d.curMachine} — model not in lookup, recommendation based on volume.</td></tr></table></td></tr>`
+      ? `<tr><td style="padding:0 0 20px 0;"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#F4F6FA;border:1px solid #D0D8E8;padding:14px 18px;font-family:Arial,sans-serif;font-size:13px;color:#555555;line-height:1.6;"><strong>Replacing your ${d.curMachine}:</strong> We&rsquo;ve based this recommendation on your monthly print volume to make sure the new machine fits how you actually print.</td></tr></table></td></tr>`
       : '');
 
   const notesRow = rec.notes
