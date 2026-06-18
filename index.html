@@ -517,27 +517,52 @@ input.error { border-color: #DC2626; }
 .btn-ghost:hover { border-color: var(--slate); color: var(--text); }
 
 .btn-submit {
-  background: var(--navy);
-  color: #fff;
-  margin-left: auto;
-  box-shadow: 0 2px 10px rgba(12,27,58,0.22);
+  background: transparent;
+  color: var(--navy);
+  border: 2px solid var(--navy);
+  margin-left: 0;
+  box-shadow: none;
+  width: 100%;
 }
 .btn-submit:hover:not(:disabled) {
-  background: var(--navy-mid);
-  box-shadow: 0 4px 18px rgba(12,27,58,0.32);
+  background: var(--navy);
+  color: #fff;
   transform: translateY(-1px);
 }
 
-/* ── CONTACT CTA ── */
-.contact-cta { margin-top: 16px; }
-.contact-cta-divider {
-  display: flex; align-items: center; gap: 12px;
-  color: var(--text-light); font-size: 0.8rem;
-  margin-bottom: 14px;
+/* ── CHOICE GRID ── */
+.choice-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 20px;
 }
-.contact-cta-divider::before,
-.contact-cta-divider::after {
-  content: ''; flex: 1; height: 1px; background: var(--border);
+@media (max-width: 540px) {
+  .choice-grid { grid-template-columns: 1fr; }
+}
+.choice-card {
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #fff;
+}
+.choice-card--primary {
+  border-color: var(--navy);
+  background: #f5f7ff;
+}
+.choice-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--navy);
+}
+.choice-desc {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  line-height: 1.5;
+  flex: 1;
 }
 .btn-contact {
   width: 100%;
@@ -547,7 +572,7 @@ input.error { border-color: #DC2626; }
   padding: 14px 28px;
   border-radius: var(--radius);
 }
-.btn-contact:hover { background: var(--navy-mid); }
+.btn-contact:hover:not(:disabled) { background: var(--navy-mid); transform: translateY(-1px); }
 .btn-contact:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ── SPINNER ── */
@@ -1170,7 +1195,6 @@ input.error { border-color: #DC2626; }
       <div class="step-card" id="step-3">
         <div class="step-eyebrow">Step 4 of 4</div>
         <h1 class="step-title">Your Contact<br>Information</h1>
-        <p class="step-desc">We'll send your recommendation and follow up to make sure it's the right fit.</p>
 
         <div class="input-row">
           <div class="field-group">
@@ -1206,13 +1230,20 @@ input.error { border-color: #DC2626; }
         <div class="cf-turnstile" data-sitekey="0x4AAAAAADhX_3HTT8MljPfT" data-theme="light"></div>
         <div class="err-msg" id="err-turnstile">Please complete the verification above.</div>
 
-        <div class="btn-row">
+        <div style="margin-top:36px;padding-top:24px;border-top:1.5px solid var(--border);">
           <button class="btn btn-ghost" onclick="prevStep(3)">← Back</button>
-          <button class="btn btn-submit" id="submit-btn" onclick="submitForm()">Get My Recommendation →</button>
         </div>
-        <div class="contact-cta">
-          <div class="contact-cta-divider"><span>or</span></div>
-          <button class="btn btn-contact" id="contact-btn" onclick="submitForm(true)">📞 I'm Ready — Have a Rep Contact Me →</button>
+        <div class="choice-grid">
+          <div class="choice-card">
+            <div class="choice-title">Email Me My Results</div>
+            <div class="choice-desc">We'll send your recommendation straight to your inbox.</div>
+            <button class="btn btn-submit" id="submit-btn" onclick="submitForm()">Get My Recommendation →</button>
+          </div>
+          <div class="choice-card choice-card--primary">
+            <div class="choice-title">Talk to Someone</div>
+            <div class="choice-desc">We'll send your results and have a rep reach out to help.</div>
+            <button class="btn btn-contact" id="contact-btn" onclick="submitForm(true)">📞 I'm Ready — Contact Me →</button>
+          </div>
         </div>
         <div class="spinner-wrap" id="spinner">
           <div class="spinner"></div>
@@ -1337,7 +1368,6 @@ input.error { border-color: #DC2626; }
       <div class="step-card" id="step-b2">
         <div class="step-eyebrow">Step 3 of 3</div>
         <h1 class="step-title">Your Contact<br>Information</h1>
-        <p class="step-desc">We'll send your recommendation and follow up to confirm it's the right fit.</p>
 
         <div class="input-row">
           <div class="field-group">
@@ -1369,13 +1399,20 @@ input.error { border-color: #DC2626; }
         <div class="cf-turnstile" data-sitekey="0x4AAAAAADhX_3HTT8MljPfT" data-theme="light"></div>
         <div class="err-msg" id="b-err-turnstile">Please complete the verification above.</div>
 
-        <div class="btn-row">
+        <div style="margin-top:36px;padding-top:24px;border-top:1.5px solid var(--border);">
           <button class="btn btn-ghost" onclick="prevBrotherStep(2)">← Back</button>
-          <button class="btn btn-submit" id="b-submit-btn" onclick="submitBrotherForm()">Get My Recommendation →</button>
         </div>
-        <div class="contact-cta">
-          <div class="contact-cta-divider"><span>or</span></div>
-          <button class="btn btn-contact" id="b-contact-btn" onclick="submitBrotherForm(true)">📞 I'm Ready — Have a Rep Contact Me →</button>
+        <div class="choice-grid">
+          <div class="choice-card">
+            <div class="choice-title">Email Me My Results</div>
+            <div class="choice-desc">We'll send your recommendation straight to your inbox.</div>
+            <button class="btn btn-submit" id="b-submit-btn" onclick="submitBrotherForm()">Get My Recommendation →</button>
+          </div>
+          <div class="choice-card choice-card--primary">
+            <div class="choice-title">Talk to Someone</div>
+            <div class="choice-desc">We'll send your results and have a rep reach out to help.</div>
+            <button class="btn btn-contact" id="b-contact-btn" onclick="submitBrotherForm(true)">📞 I'm Ready — Contact Me →</button>
+          </div>
         </div>
         <div class="spinner-wrap" id="b-spinner">
           <div class="spinner"></div>
@@ -1425,9 +1462,7 @@ input.error { border-color: #DC2626; }
       <div class="next-card">
         <div class="next-card-title">What Happens Next</div>
         <div class="next-card-body">
-          A full spec sheet and detailed recommendation has been emailed to you.
-          A member of our team will reach out to confirm this is the right machine for your workflow —
-          no pressure, just making sure you get exactly what you need.<br><br>
+          A full spec sheet and detailed recommendation has been emailed to you.<br><br>
           <strong>Questions right now?</strong> Call us at
           <a href="tel:7856322177"><strong>785-632-2177</strong></a>
           or email <a href="mailto:sales@centralofficesupply.com"><strong>sales@centralofficesupply.com</strong></a>.
@@ -2309,7 +2344,7 @@ function submitForm(contactMe = false) {
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
 <tr><td style="padding:0 0 24px 0;font-family:Arial,sans-serif;font-size:15px;color:#333333;line-height:1.6;">
 Hi ${d.name},<br><br>
-Thank you for using our Copier and Printer Finder. Based on your answers, here is our recommendation along with a full spec sheet straight from Sharp. A member of our team will follow up to confirm this is the right fit.
+Thank you for using our Copier and Printer Finder. Based on your answers, here is our recommendation along with a full spec sheet straight from Sharp.
 </td></tr>
 ${speedBumpRow}
 <tr><td style="padding:0 0 20px 0;">
@@ -2412,6 +2447,17 @@ ${whatHappensNext}
     message_html:  emailBody,
   })
   .then(() => {
+    if (contactMe) {
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        to_email:      BCC_EMAIL,
+        to_name:       'Logan',
+        bcc_email:     '',
+        customer_name: d.name,
+        rec_model:     rec.model,
+        subject:       `[Contact Request] ${d.name} — ${rec.model}`,
+        message_html:  emailBody,
+      });
+    }
     document.getElementById('spinner').classList.remove('show');
     showResultSection(d, rec, suggestColor, speedBumped, detectedSpeed, 'sharp');
   })
@@ -2483,7 +2529,7 @@ function submitBrotherForm(contactMe = false) {
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
 <tr><td style="padding:0 0 24px 0;font-family:Arial,sans-serif;font-size:15px;color:#333333;line-height:1.6;">
 Hi ${d.name},<br><br>
-Thank you for using our Printer Finder. Based on your answers, here is our recommended Brother desktop workhorse. A member of our team will follow up to confirm this is the right fit.
+Thank you for using our Printer Finder. Based on your answers, here is our recommended Brother desktop workhorse.
 </td></tr>
 <tr><td style="padding:0 0 20px 0;">
 <table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#004B87" style="border-radius:8px;">
@@ -2581,6 +2627,17 @@ ${whatHappensNext}
     message_html:  emailBody,
   })
   .then(() => {
+    if (contactMe) {
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        to_email:      BCC_EMAIL,
+        to_name:       'Logan',
+        bcc_email:     '',
+        customer_name: d.name,
+        rec_model:     rec.model,
+        subject:       `[Contact Request] ${d.name} — ${rec.model}`,
+        message_html:  emailBody,
+      });
+    }
     document.getElementById('b-spinner').classList.remove('show');
     showResultSection(d, rec, false, false, null, 'brother');
   })
