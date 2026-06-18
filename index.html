@@ -528,6 +528,28 @@ input.error { border-color: #DC2626; }
   transform: translateY(-1px);
 }
 
+/* ── CONTACT CTA ── */
+.contact-cta { margin-top: 16px; }
+.contact-cta-divider {
+  display: flex; align-items: center; gap: 12px;
+  color: var(--text-light); font-size: 0.8rem;
+  margin-bottom: 14px;
+}
+.contact-cta-divider::before,
+.contact-cta-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+.btn-contact {
+  width: 100%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 0.95rem;
+  padding: 14px 28px;
+  border-radius: var(--radius);
+}
+.btn-contact:hover { background: var(--navy-mid); }
+.btn-contact:disabled { opacity: 0.5; cursor: not-allowed; }
+
 /* ── SPINNER ── */
 .spinner-wrap {
   display: none;
@@ -1188,6 +1210,10 @@ input.error { border-color: #DC2626; }
           <button class="btn btn-ghost" onclick="prevStep(3)">← Back</button>
           <button class="btn btn-submit" id="submit-btn" onclick="submitForm()">Get My Recommendation →</button>
         </div>
+        <div class="contact-cta">
+          <div class="contact-cta-divider"><span>or</span></div>
+          <button class="btn btn-contact" id="contact-btn" onclick="submitForm(true)">📞 I'm Ready — Have a Rep Contact Me →</button>
+        </div>
         <div class="spinner-wrap" id="spinner">
           <div class="spinner"></div>
           <span>Sending your results…</span>
@@ -1346,6 +1372,10 @@ input.error { border-color: #DC2626; }
         <div class="btn-row">
           <button class="btn btn-ghost" onclick="prevBrotherStep(2)">← Back</button>
           <button class="btn btn-submit" id="b-submit-btn" onclick="submitBrotherForm()">Get My Recommendation →</button>
+        </div>
+        <div class="contact-cta">
+          <div class="contact-cta-divider"><span>or</span></div>
+          <button class="btn btn-contact" id="b-contact-btn" onclick="submitBrotherForm(true)">📞 I'm Ready — Have a Rep Contact Me →</button>
         </div>
         <div class="spinner-wrap" id="b-spinner">
           <div class="spinner"></div>
@@ -2213,7 +2243,7 @@ function buildFeatureList(d) {
 // ─────────────────────────────────────────────────────────────────────
 //  SUBMIT
 // ─────────────────────────────────────────────────────────────────────
-function submitForm() {
+function submitForm(contactMe = false) {
   if (!validate(3)) return;
   const tsToken = document.querySelector('#step-3 [name="cf-turnstile-response"]')?.value;
   setError('err-turnstile', !tsToken);
@@ -2226,6 +2256,7 @@ function submitForm() {
   const rec = MODELS[key];
 
   document.getElementById('submit-btn').disabled = true;
+  document.getElementById('contact-btn').disabled = true;
   document.getElementById('spinner').classList.add('show');
   document.getElementById('send-status').className = 'send-status';
   document.getElementById('send-status').textContent = '';
@@ -2247,6 +2278,16 @@ function submitForm() {
   const specsRows = rec.fullSpecs.map(s =>
     `<tr><td style="padding:7px 0;border-bottom:1px solid #F0F0F0;font-family:Arial,sans-serif;font-size:13px;color:#444444;line-height:1.4;">&rsaquo; ${s}</td></tr>`
   ).join('');
+
+  const whatHappensNext = contactMe
+    ? `<p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#555555;line-height:1.7;">A member of our sales team will be in touch to confirm this recommendation. No obligation — we just want to make sure you get the right machine.<br><br>
+<strong>Questions now?</strong><br>
+<a href="tel:7856322177" style="color:#2B5CE6;text-decoration:none;">785-632-2177</a> &nbsp;|&nbsp;
+<a href="mailto:sales@centralofficesupply.com" style="color:#2B5CE6;text-decoration:none;">sales@centralofficesupply.com</a></p>`
+    : `<p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#555555;line-height:1.7;">Take your time reviewing your recommendation. When you&rsquo;re ready to move forward, we&rsquo;re here.<br><br>
+<strong>Ready to talk?</strong><br>
+<a href="tel:7856322177" style="color:#2B5CE6;text-decoration:none;">785-632-2177</a> &nbsp;|&nbsp;
+<a href="mailto:sales@centralofficesupply.com" style="color:#2B5CE6;text-decoration:none;">sales@centralofficesupply.com</a></p>`;
 
   const emailBody = `<!DOCTYPE html>
 <html><head><meta charset="UTF-8"></head>
@@ -2343,12 +2384,8 @@ ${colorSuggestRow}
 <tr><td>
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #D0D8E8;border-left:4px solid #2B5CE6;">
 <tr><td style="padding:20px 24px;">
-<p style="margin:0 0 10px 0;font-family:Arial,sans-serif;font-size:13px;font-weight:bold;color:#0C1B3A;text-transform:uppercase;">What Happens Next</p>
-<p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#555555;line-height:1.7;">A member of our sales team will be in touch to confirm this recommendation. No obligation — we just want to make sure you get the right machine.<br><br>
-<strong>Questions now?</strong><br>
-<a href="tel:7856322177" style="color:#2B5CE6;text-decoration:none;">785-632-2177</a> &nbsp;|&nbsp;
-<a href="mailto:sales@centralofficesupply.com" style="color:#2B5CE6;text-decoration:none;">sales@centralofficesupply.com</a>
-</p>
+<p style="margin:0 0 10px 0;font-family:Arial,sans-serif;font-size:13px;font-weight:bold;color:#0C1B3A;text-transform:uppercase;">${contactMe ? 'What Happens Next' : 'Ready When You Are'}</p>
+${whatHappensNext}
 </td></tr>
 </table>
 </td></tr>
@@ -2368,7 +2405,7 @@ ${colorSuggestRow}
   emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
     to_email:      d.email,
     to_name:       d.name,
-    bcc_email:     BCC_EMAIL,
+    bcc_email:     contactMe ? BCC_EMAIL : '',
     customer_name: d.name,
     rec_model:     rec.model,
     subject:       `Your Sharp MFP Recommendation - ${rec.model}`,
@@ -2382,6 +2419,7 @@ ${colorSuggestRow}
     console.error('EmailJS error:', err);
     document.getElementById('spinner').classList.remove('show');
     document.getElementById('submit-btn').disabled = false;
+    document.getElementById('contact-btn').disabled = false;
     const status = document.getElementById('send-status');
     status.className = 'send-status error-s';
     status.textContent = 'There was a problem sending your results. Please call us at 785-632-2177 or email sales@centralofficesupply.com.';
@@ -2391,7 +2429,7 @@ ${colorSuggestRow}
 // ─────────────────────────────────────────────────────────────────────
 //  SUBMIT BROTHER FORM
 // ─────────────────────────────────────────────────────────────────────
-function submitBrotherForm() {
+function submitBrotherForm(contactMe = false) {
   if (!validateBrother(2)) return;
   const bTsToken = document.querySelector('#step-b2 [name="cf-turnstile-response"]')?.value;
   setError('b-err-turnstile', !bTsToken);
@@ -2402,6 +2440,7 @@ function submitBrotherForm() {
   const rec = MODELS[key];
 
   document.getElementById('b-submit-btn').disabled = true;
+  document.getElementById('b-contact-btn').disabled = true;
   document.getElementById('b-spinner').classList.add('show');
   document.getElementById('b-send-status').className = 'send-status';
   document.getElementById('b-send-status').textContent = '';
@@ -2413,6 +2452,16 @@ function submitBrotherForm() {
   const replacingRow = d.replacing === 'yes'
     ? `<tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#888888;">Replacing</td><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#333333;font-weight:bold;">Yes — ${d.curMachine || 'not specified'}</td></tr>`
     : `<tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#888888;">Replacing</td><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#333333;font-weight:bold;">No</td></tr>`;
+
+  const whatHappensNext = contactMe
+    ? `<p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#555555;line-height:1.7;">A member of our sales team will be in touch to confirm this recommendation. No obligation — we just want to make sure you get the right machine.<br><br>
+<strong>Questions now?</strong><br>
+<a href="tel:7856322177" style="color:#004B87;text-decoration:none;">785-632-2177</a> &nbsp;|&nbsp;
+<a href="mailto:sales@centralofficesupply.com" style="color:#004B87;text-decoration:none;">sales@centralofficesupply.com</a></p>`
+    : `<p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#555555;line-height:1.7;">Take your time reviewing your recommendation. When you&rsquo;re ready to move forward, we&rsquo;re here.<br><br>
+<strong>Ready to talk?</strong><br>
+<a href="tel:7856322177" style="color:#004B87;text-decoration:none;">785-632-2177</a> &nbsp;|&nbsp;
+<a href="mailto:sales@centralofficesupply.com" style="color:#004B87;text-decoration:none;">sales@centralofficesupply.com</a></p>`;
 
   const emailBody = `<!DOCTYPE html>
 <html><head><meta charset="UTF-8"></head>
@@ -2504,12 +2553,8 @@ ${replacingRow}
 <tr><td>
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #D0D8E8;border-left:4px solid #004B87;">
 <tr><td style="padding:20px 24px;">
-<p style="margin:0 0 10px 0;font-family:Arial,sans-serif;font-size:13px;font-weight:bold;color:#004B87;text-transform:uppercase;">What Happens Next</p>
-<p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#555555;line-height:1.7;">A member of our sales team will be in touch to confirm this recommendation. No obligation — we just want to make sure you get the right machine.<br><br>
-<strong>Questions now?</strong><br>
-<a href="tel:7856322177" style="color:#004B87;text-decoration:none;">785-632-2177</a> &nbsp;|&nbsp;
-<a href="mailto:sales@centralofficesupply.com" style="color:#004B87;text-decoration:none;">sales@centralofficesupply.com</a>
-</p>
+<p style="margin:0 0 10px 0;font-family:Arial,sans-serif;font-size:13px;font-weight:bold;color:#004B87;text-transform:uppercase;">${contactMe ? 'What Happens Next' : 'Ready When You Are'}</p>
+${whatHappensNext}
 </td></tr>
 </table>
 </td></tr>
@@ -2529,7 +2574,7 @@ ${replacingRow}
   emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
     to_email:      d.email,
     to_name:       d.name,
-    bcc_email:     BCC_EMAIL,
+    bcc_email:     contactMe ? BCC_EMAIL : '',
     customer_name: d.name,
     rec_model:     rec.model,
     subject:       `Your Brother Workhorse Recommendation — ${rec.model}`,
@@ -2543,6 +2588,7 @@ ${replacingRow}
     console.error('EmailJS error:', err);
     document.getElementById('b-spinner').classList.remove('show');
     document.getElementById('b-submit-btn').disabled = false;
+    document.getElementById('b-contact-btn').disabled = false;
     const status = document.getElementById('b-send-status');
     status.className = 'send-status error-s';
     status.textContent = 'There was a problem sending your results. Please call us at 785-632-2177 or email sales@centralofficesupply.com.';
@@ -2618,6 +2664,8 @@ function restartTool() {
   document.getElementById('b-replace-field').style.display = 'none';
   document.getElementById('submit-btn').disabled = false;
   document.getElementById('b-submit-btn').disabled = false;
+  document.getElementById('contact-btn').disabled = false;
+  document.getElementById('b-contact-btn').disabled = false;
   // Clear all visible error/status state
   document.querySelectorAll('.err-msg.show').forEach(e => e.classList.remove('show'));
   document.querySelectorAll('.error').forEach(f => f.classList.remove('error'));
