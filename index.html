@@ -2761,6 +2761,25 @@ function restartTool() {
   resetSidebar();
   showCard('step-cat');
 }
+
+// Report height to a parent iframe host (no-op when opened standalone).
+(function () {
+  if (window.parent === window) return;
+  var last = 0;
+  function postHeight() {
+    var h = Math.ceil(document.documentElement.scrollHeight);
+    if (h && h !== last) {
+      last = h;
+      window.parent.postMessage({ type: 'copier-finder-height', height: h }, '*');
+    }
+  }
+  window.addEventListener('load', postHeight);
+  window.addEventListener('resize', postHeight);
+  window.addEventListener('orientationchange', postHeight);
+  if ('ResizeObserver' in window) {
+    new ResizeObserver(postHeight).observe(document.body);
+  }
+})();
 </script>
 
 </body>
