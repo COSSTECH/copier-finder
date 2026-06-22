@@ -848,7 +848,7 @@ input.error { border-color: #DC2626; }
 
 /* ── MOBILE / NARROW VIEWPORT ── */
 @media (max-width: 860px) {
-  html, body { overflow-y: auto; overflow-x: hidden; }
+  html, body { height: auto; overflow-y: auto; overflow-x: hidden; }
   .app-shell {
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr;
@@ -2102,6 +2102,7 @@ function showCard(id) {
   clearStepErrors(id);
   document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   document.getElementById('content-pane').scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -2674,6 +2675,7 @@ function showResultSection(d, rec, suggestColor, speedBumped, detectedSpeed, pat
   path = path || 'sharp';
   document.getElementById('form-area').style.display = 'none';
   document.getElementById('result-section').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   document.getElementById('content-pane').scrollTo({ top: 0, behavior: 'smooth' });
 
   // Sidebar: all done
