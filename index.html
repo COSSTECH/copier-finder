@@ -32,7 +32,7 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html, body { height: 100%; overflow: hidden; }
+html, body { height: auto; overflow-x: hidden; }
 
 body {
   font-family: 'DM Sans', sans-serif;
@@ -47,13 +47,15 @@ body {
 .app-shell {
   display: grid;
   grid-template-columns: 320px 1fr;
-  height: 100vh;
+  min-height: 100vh;
 }
 
 /* ── SIDEBAR ── */
 .sidebar {
   background: var(--navy);
-  position: relative;
+  position: sticky;
+  top: 0;
+  height: 100vh;
   overflow: hidden;
 }
 
@@ -215,8 +217,7 @@ body {
 
 /* ── CONTENT PANE ── */
 .content-pane {
-  overflow-y: auto;
-  height: 100vh;
+  height: auto;
   background: var(--bg);
 }
 
