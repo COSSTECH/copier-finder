@@ -47,15 +47,13 @@ body {
 .app-shell {
   display: grid;
   grid-template-columns: 320px 1fr;
-  min-height: 100vh;
+  min-height: 600px;
 }
 
 /* ── SIDEBAR ── */
 .sidebar {
   background: var(--navy);
-  position: sticky;
-  top: 0;
-  height: 100vh;
+  position: relative;
   overflow: hidden;
 }
 
@@ -223,7 +221,7 @@ body {
 
 /* ── FORM AREA ── */
 .form-area {
-  min-height: 100vh;
+  min-height: 0;
   padding: 60px 80px;
   display: flex;
   align-items: flex-start;
@@ -854,9 +852,9 @@ input.error { border-color: #DC2626; }
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr;
     height: auto;
-    min-height: 100vh;
+    min-height: 0;
   }
-  .sidebar { position: relative; height: auto; overflow: hidden; }
+  .sidebar { overflow: visible; }
   .sidebar-inner { padding: 20px 24px; height: auto; }
   .sidebar-logo { margin-bottom: 14px; }
   .sidebar-headline { font-size: 1.15rem; }
@@ -1764,12 +1762,12 @@ const MODELS = {
     notes: 'Max paper size is 8.5×14" (legal). 11×17 tabloid is not supported. No finishing options available on this model.'
   },
   'brother-color-m': {
-    model: 'Brother MFC-L9670CDW', series: 'Brother MFC-L9 Series — Enterprise Color Laser All-in-One',
+    model: 'Brother MFC-L9670CDN', series: 'Brother MFC-L9 Series — Enterprise Color Laser All-in-One',
     speed: '42', colorType: 'Color', maxPaper: '8.5×14"',
-    reason: 'The MFC-L9670CDW is Brother\'s highest-output desktop color laser all-in-one. At 42 ppm with a 100-sheet ADF capable of 104 ipm duplex scanning, it handles demanding color workloads with enterprise-grade reliability.',
+    reason: 'The MFC-L9670CDN is Brother\'s highest-output desktop color laser all-in-one. At 42 ppm with a 100-sheet ADF capable of 104 ipm duplex scanning, it handles demanding color workloads with enterprise-grade reliability.',
     badges: ['Color Laser', 'Enterprise Desktop', '42 ppm', 'Up to 8.5×14"'],
     specPdfUrl: 'https://www.brother-usa.com/-/media/brother/product-catalog-media/documents/2026/04/20/14/21/mfc-l9670cdn_2pgbrochure.pdf',
-    productUrl: 'https://www.brother-usa.com/products/mfcl9670cdw',
+    productUrl: 'https://www.brother-usa.com/products/mfcl9670cdn',
     fullSpecs: [
       'Type: Enterprise color laser multi-function printer',
       'Print/Copy Speed: 42 ppm (color & mono, 8.5×11")',
@@ -1971,7 +1969,7 @@ const MODEL_LOOKUP = [
   { match: ['mfc-l8970','mfcl8970','l8970cdw','8970cdw'], speed: 33 },
   { match: ['mfc-l5915','mfcl5915','l5915dw','5915dw'], speed: 50 },
   { match: ['mfc-l6915','mfcl6915','l6915dw','6915dw'], speed: 52 },
-  { match: ['mfc-l9670','mfcl9670','l9670cdw','9670cdw'], speed: 42 },
+  { match: ['mfc-l9670','mfcl9670','l9670cdn','9670cdn'], speed: 42 },
 ];
 
 function lookupModelSpeed(modelStr) {
